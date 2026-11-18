@@ -9,13 +9,14 @@ import { User } from '../../entities/user.entity';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     configService: ConfigService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey:
-        configService.get<string>('JWT_SECRET') || 'dev_jwt_secret_change_in_prod',
+        configService.get<string>('JWT_SECRET') ||
+        'dev_jwt_secret_change_in_prod',
     });
   }
 

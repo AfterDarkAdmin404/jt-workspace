@@ -2,12 +2,12 @@
 
 Nx monorepo managed with **Yarn 4 (Berry)** containing:
 
-| Project | Package Name | Description |
-| :--- | :--- | :--- |
-| `apps/ikagi-api` | `@org/ikagi-api` | NestJS backend API (Auth, Audit Logs, Redis Cache & Rate Limiting, Swagger) |
-| `apps/ikagi-web` | `@org/ikagi-web` | Next.js frontend application |
-| `libs/nest-lib` | `@jt-workspace/nest-lib` | Shared NestJS library (TypeORM entities/migrations, Auth, Audit, Cache, Rate Limit) |
-| `libs/next-lib` | `@org/next-lib` | Shared Next.js/React library |
+| Project          | Package Name             | Description                                                                         |
+| :--------------- | :----------------------- | :---------------------------------------------------------------------------------- |
+| `apps/ikagi-api` | `@org/ikagi-api`         | NestJS backend API (Auth, Audit Logs, Redis Cache & Rate Limiting, Swagger)         |
+| `apps/ikagi-web` | `@org/ikagi-web`         | Next.js frontend application                                                        |
+| `libs/nest-lib`  | `@jt-workspace/nest-lib` | Shared NestJS library (TypeORM entities/migrations, Auth, Audit, Cache, Rate Limit) |
+| `libs/next-lib`  | `@org/next-lib`          | Shared Next.js/React library                                                        |
 
 ---
 
@@ -28,7 +28,7 @@ Nx monorepo managed with **Yarn 4 (Berry)** containing:
      ```sh
      docker run -d --name jt-redis -p 6379:6379 redis:7-alpine
      ```
-4. **Docker** *(optional, for containerized builds/runs)*
+4. **Docker** _(optional, for containerized builds/runs)_
 
 ---
 

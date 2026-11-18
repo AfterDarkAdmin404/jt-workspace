@@ -10,12 +10,12 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 
-export interface AuthModuleAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface AuthModuleAsyncOptions extends Pick<
+  ModuleMetadata,
+  'imports'
+> {
   inject?: any[];
-  useFactory?: (
-    ...args: any[]
-  ) => Promise<JwtModuleOptions> | JwtModuleOptions;
+  useFactory?: (...args: any[]) => Promise<JwtModuleOptions> | JwtModuleOptions;
 }
 
 @Module({})

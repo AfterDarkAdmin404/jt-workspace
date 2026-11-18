@@ -64,13 +64,13 @@ import { AppService } from './app.service';
         enabled:
           configService.get<string>('RATE_LIMIT_ENABLED', 'true') !== 'false',
         defaultTtl: Number(
-          configService.get<string>('RATE_LIMIT_DEFAULT_TTL', '60')
+          configService.get<string>('RATE_LIMIT_DEFAULT_TTL', '60'),
         ),
         defaultLimit: Number(
-          configService.get<string>('RATE_LIMIT_DEFAULT_LIMIT', '100')
+          configService.get<string>('RATE_LIMIT_DEFAULT_LIMIT', '100'),
         ),
         profiles: parseRateLimitProfiles(
-          configService.get<string>('RATE_LIMIT_PROFILES')
+          configService.get<string>('RATE_LIMIT_PROFILES'),
         ),
         redis: {
           enabled:

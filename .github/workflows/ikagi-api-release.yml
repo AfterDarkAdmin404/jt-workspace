@@ -29,7 +29,7 @@ env:
 
 jobs:
   build-and-verify:
-    name: Build & Verify (${{ env.APP_NAME }})
+    name: Build & Verify (ikagi-api)
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
@@ -71,7 +71,7 @@ jobs:
             .
 
   deploy-gcp:
-    name: Deploy to GCP Cloud Run (${{ env.APP_NAME }})
+    name: Deploy to GCP Cloud Run (ikagi-api)
     needs: build-and-verify
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest

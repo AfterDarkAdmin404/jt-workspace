@@ -33,7 +33,7 @@ function parseArgs(argv) {
   const [command, ...rest] = argv;
   if (!command || !VALID_COMMANDS.has(command)) {
     console.error(
-      `Invalid or missing command "${command ?? ''}". Expected one of: ${[...VALID_COMMANDS].join(', ')}`
+      `Invalid or missing command "${command ?? ''}". Expected one of: ${[...VALID_COMMANDS].join(', ')}`,
     );
     process.exit(1);
   }
@@ -80,7 +80,7 @@ function main() {
 
   if (!appName) {
     console.error(
-      `Missing target app name. Available apps: ${availableApps.join(', ') || '(none)'}`
+      `Missing target app name. Available apps: ${availableApps.join(', ') || '(none)'}`,
     );
     process.exit(1);
   }
@@ -88,7 +88,7 @@ function main() {
   const appDir = path.resolve(workspaceRoot, 'apps', appName);
   if (!fs.existsSync(appDir) || !fs.statSync(appDir).isDirectory()) {
     console.error(
-      `Target app "${appName}" not found under apps/. Available apps: ${availableApps.join(', ') || '(none)'}`
+      `Target app "${appName}" not found under apps/. Available apps: ${availableApps.join(', ') || '(none)'}`,
     );
     process.exit(1);
   }
@@ -102,7 +102,9 @@ function main() {
   switch (command) {
     case 'build':
       if (!fs.existsSync(dockerfileFsPath)) {
-        console.error(`Dockerfile not found for "${appName}" at ${dockerfilePath}`);
+        console.error(
+          `Dockerfile not found for "${appName}" at ${dockerfilePath}`,
+        );
         process.exit(1);
       }
       runDocker([

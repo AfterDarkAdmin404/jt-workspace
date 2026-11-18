@@ -37,7 +37,7 @@ export class RedisCacheModule {
 
             if (opts.enabled === false) {
               this.logger.log(
-                'REDIS_ENABLED=false; falling back to in-memory cache store'
+                'REDIS_ENABLED=false; falling back to in-memory cache store',
               );
               return { ttl };
             }
@@ -46,7 +46,7 @@ export class RedisCacheModule {
             const keyvStore = createKeyv(redisUrl);
             keyvStore.on('error', (err: unknown) => {
               this.logger.error(
-                `Redis cache error: ${err instanceof Error ? err.message : String(err)}`
+                `Redis cache error: ${err instanceof Error ? err.message : String(err)}`,
               );
             });
 

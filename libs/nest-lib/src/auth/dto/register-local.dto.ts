@@ -18,7 +18,7 @@ export class RegisterLocalDto {
     maxLength: 255,
   })
   @Transform(({ value }) =>
-    typeof value === 'string' ? value.trim().toLowerCase() : value
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   @IsNotEmpty()
   @IsEmail()

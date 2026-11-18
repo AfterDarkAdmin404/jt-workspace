@@ -6,9 +6,7 @@ import {
   TableIndex,
 } from 'typeorm';
 
-export class CreateUserActionLogsTable1794990000000
-  implements MigrationInterface
-{
+export class CreateUserActionLogsTable1794990000000 implements MigrationInterface {
   name = 'CreateUserActionLogsTable1794990000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -65,7 +63,7 @@ export class CreateUserActionLogsTable1794990000000
           },
         ],
       }),
-      true
+      true,
     );
 
     await queryRunner.createForeignKey(
@@ -76,7 +74,7 @@ export class CreateUserActionLogsTable1794990000000
         referencedTableName: 'users',
         referencedColumnNames: ['id'],
         onDelete: 'SET NULL',
-      })
+      }),
     );
 
     await queryRunner.createIndex(
@@ -84,7 +82,7 @@ export class CreateUserActionLogsTable1794990000000
       new TableIndex({
         name: 'IDX_USER_ACTION_LOGS_USER_ID',
         columnNames: ['user_id'],
-      })
+      }),
     );
 
     await queryRunner.createIndex(
@@ -92,7 +90,7 @@ export class CreateUserActionLogsTable1794990000000
       new TableIndex({
         name: 'IDX_USER_ACTION_LOGS_ACTION',
         columnNames: ['action'],
-      })
+      }),
     );
 
     await queryRunner.createIndex(
@@ -100,26 +98,26 @@ export class CreateUserActionLogsTable1794990000000
       new TableIndex({
         name: 'IDX_USER_ACTION_LOGS_CREATED_AT',
         columnNames: ['created_at'],
-      })
+      }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropIndex(
       'user_action_logs',
-      'IDX_USER_ACTION_LOGS_CREATED_AT'
+      'IDX_USER_ACTION_LOGS_CREATED_AT',
     );
     await queryRunner.dropIndex(
       'user_action_logs',
-      'IDX_USER_ACTION_LOGS_ACTION'
+      'IDX_USER_ACTION_LOGS_ACTION',
     );
     await queryRunner.dropIndex(
       'user_action_logs',
-      'IDX_USER_ACTION_LOGS_USER_ID'
+      'IDX_USER_ACTION_LOGS_USER_ID',
     );
     await queryRunner.dropForeignKey(
       'user_action_logs',
-      'FK_user_action_logs_user_id'
+      'FK_user_action_logs_user_id',
     );
     await queryRunner.dropTable('user_action_logs', true);
   }

@@ -8,7 +8,7 @@ import { AuthService } from '../auth.service';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     configService: ConfigService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {
     super({
       clientID:
@@ -26,13 +26,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     _accessToken: string,
     _refreshToken: string,
     profile: Profile,
-    done: VerifyCallback
+    done: VerifyCallback,
   ): Promise<void> {
     const email = profile.emails?.[0]?.value;
     if (!email) {
       return done(
         new UnauthorizedException('Google account has no email address'),
-        false
+        false,
       );
     }
 

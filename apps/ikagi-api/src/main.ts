@@ -22,7 +22,7 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-    })
+    }),
   );
 
   const configService = app.get(ConfigService);
@@ -41,9 +41,12 @@ async function bootstrap() {
   if (swaggerEnabled) {
     const swaggerTitle = configService.get<string>(
       'SWAGGER_TITLE',
-      'Ikagi API - Auth & Core Services'
+      'Ikagi API - Auth & Core Services',
     );
-    const swaggerVersion = configService.get<string>('SWAGGER_VERSION', '1.0.0');
+    const swaggerVersion = configService.get<string>(
+      'SWAGGER_VERSION',
+      '1.0.0',
+    );
 
     // Register /docs/auth and /docs/auth-json before /docs so sub-paths match first
     const authConfig = new DocumentBuilder()
@@ -90,7 +93,7 @@ async function bootstrap() {
     try {
       // Function keeps TypeScript and bundlers from rewriting or bundling the import
       const load = new Function('s', 'return import(s)') as (
-        s: string
+        s: string,
       ) => Promise<{ emitReadySignal(server: unknown): boolean }>;
       (await load('@nx/js/ready-signal')).emitReadySignal(app.getHttpServer());
     } catch {
@@ -99,11 +102,11 @@ async function bootstrap() {
   }
 
   Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
+    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
   );
   if (swaggerEnabled) {
     Logger.log(
-      `📚 Swagger UI: http://localhost:${port}/${swaggerDocsPath} | Auth: http://localhost:${port}/${swaggerAuthPath} (JSON: http://localhost:${port}/${swaggerAuthJsonPath})`
+      `📚 Swagger UI: http://localhost:${port}/${swaggerDocsPath} | Auth: http://localhost:${port}/${swaggerAuthPath} (JSON: http://localhost:${port}/${swaggerAuthJsonPath})`,
     );
   }
 }
