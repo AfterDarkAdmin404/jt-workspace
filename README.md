@@ -97,6 +97,11 @@ yarn docker:stop ikagi-api
 
 > **Note:** `yarn docker:run ikagi-api` defaults `DB_HOST=host.docker.internal` and `REDIS_HOST=host.docker.internal` so the container can reach PostgreSQL and Redis running on your host machine.
 
+### CI/CD & GCP Release
+
+- Main CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+- `ikagi-api` Release (Dry-Run / GCP Cloud Run): [`.github/workflows/ikagi-api-release.yml`](.github/workflows/ikagi-api-release.yml) — see [docs/ci-cd-gcp.md](docs/ci-cd-gcp.md) for activation variables and secrets.
+
 ---
 
 ## Database Migration Commands

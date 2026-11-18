@@ -1,0 +1,141 @@
+name: ikagi-api-release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - release
+      - 'releases/**'
+    paths:
+      - 'apps/ikagi-api/**'
+      - 'libs/nest-lib/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.yarnrc.yml'
+      - 'tsconfig.base.json'
+      - 'nx.json'
+      - '.github/workflows/ikagi-api-release.yml'
+
+concurrency:
+  group: ikagi-api-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  APP_NAME: ikagi-api
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'ikagi-prod-placeholder' }}
+  GCP_REGION: ${{ vars.GCP_REGION || 'asia-southeast1' }}
+  GCP_AR_REPO: ${{ vars.GCP_AR_REPO || 'ikagi-docker-repo' }}
+  GCP_CLOUD_RUN_SERVICE: ${{ vars.GCP_CLOUD_RUN_SERVICE || 'ikagi-api' }}
+
+jobs:
+  build-and-verify:
+    name: Build & Verify (${{ env.APP_NAME }})
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      image_uri: ${{ steps.image.outputs.image_uri }}
+      latest_uri: ${{ steps.image.outputs.latest_uri }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: 'yarn'
+
+      - run: yarn install --immutable
+
+      - name: Build shared library and ikagi-api
+        run: |
+          yarn nx build @jt-workspace/nest-lib
+          yarn nx build @org/ikagi-api
+
+      - name: Compute Artifact Registry image URIs
+        id: image
+        run: |
+          BASE_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GCP_AR_REPO}/${APP_NAME}"
+          echo "image_uri=${BASE_URI}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "latest_uri=${BASE_URI}:latest" >> "$GITHUB_OUTPUT"
+
+      - name: Build and tag Docker image
+        run: |
+          docker build \
+            --build-arg APP_NAME="${APP_NAME}" \
+            -t "${{ steps.image.outputs.image_uri }}" \
+            -t "${{ steps.image.outputs.latest_uri }}" \
+            -f apps/ikagi-api/Dockerfile \
+            .
+
+  deploy-gcp:
+    name: Deploy to GCP Cloud Run (${{ env.APP_NAME }})
+    needs: build-and-verify
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment: production-gcp
+    steps:
+      - name: Dry-run GCP deployment (assumed infrastructure mode)
+        if: vars.GCP_DEPLOY_ENABLED != 'true'
+        run: |
+          echo "GCP_DEPLOY_ENABLED is not 'true' — running in assumed/dry-run mode."
+          echo "Resolved Image URI : ${{ needs.build-and-verify.outputs.image_uri }}"
+          echo "Resolved Latest URI: ${{ needs.build-and-verify.outputs.latest_uri }}"
+          echo "Target GCP Project : ${GCP_PROJECT_ID}"
+          echo "Target GCP Region  : ${GCP_REGION}"
+          echo "Cloud Run Service  : ${GCP_CLOUD_RUN_SERVICE}"
+          echo ""
+          echo "Commands that would execute once GCP_DEPLOY_ENABLED=true:"
+          echo "  gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev --quiet"
+          echo "  docker push ${{ needs.build-and-verify.outputs.image_uri }}"
+          echo "  docker push ${{ needs.build-and-verify.outputs.latest_uri }}"
+          echo "  gcloud run deploy ${GCP_CLOUD_RUN_SERVICE} --image ${{ needs.build-and-verify.outputs.image_uri }} --region ${GCP_REGION} --platform managed --port 3000 --allow-unauthenticated"
+
+      - uses: actions/checkout@v5
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud CLI
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        run: gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
+
+      - name: Build and push Docker image to Artifact Registry
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        run: |
+          docker build \
+            --build-arg APP_NAME="${APP_NAME}" \
+            -t "${{ needs.build-and-verify.outputs.image_uri }}" \
+            -t "${{ needs.build-and-verify.outputs.latest_uri }}" \
+            -f apps/ikagi-api/Dockerfile \
+            .
+          docker push "${{ needs.build-and-verify.outputs.image_uri }}"
+          docker push "${{ needs.build-and-verify.outputs.latest_uri }}"
+
+      - name: Deploy to Cloud Run
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        run: |
+          # Cloud Run injects $PORT (default 8080 unless --port 3000 is passed).
+          # Add runtime secrets/env vars when provisioned, e.g.:
+          #   --set-secrets="DATABASE_URL=ikagi-db-url:latest,JWT_SECRET=ikagi-jwt-secret:latest" \
+          #   --update-env-vars="NODE_ENV=production,REDIS_HOST=10.x.x.x" \
+          gcloud run deploy "${GCP_CLOUD_RUN_SERVICE}" \
+            --image "${{ needs.build-and-verify.outputs.image_uri }}" \
+            --region "${GCP_REGION}" \
+            --platform managed \
+            --port 3000 \
+            --allow-unauthenticated
