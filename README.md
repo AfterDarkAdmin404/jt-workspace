@@ -1,109 +1,132 @@
-# New Nx Repository
+# jt-workspace
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Nx monorepo managed with **Yarn 4 (Berry)** containing:
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+| Project | Package Name | Description |
+| :--- | :--- | :--- |
+| `apps/ikagi-api` | `@org/ikagi-api` | NestJS backend API (Auth, Audit Logs, Redis Cache & Rate Limiting, Swagger) |
+| `apps/ikagi-web` | `@org/ikagi-web` | Next.js frontend application |
+| `libs/nest-lib` | `@jt-workspace/nest-lib` | Shared NestJS library (TypeORM entities/migrations, Auth, Audit, Cache, Rate Limit) |
+| `libs/next-lib` | `@org/next-lib` | Shared Next.js/React library |
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/docs/technologies/typescript/introduction?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+---
 
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/get-started). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
+## Prerequisites & Required Services
 
-## Generate a library
+1. **Node.js 24+** with Corepack enabled:
+   ```sh
+   corepack enable
+   ```
+2. **PostgreSQL 14+** (required for `ikagi-api` and TypeORM migrations):
+   - Default dev database: `db_ikag` on `localhost:5432` (`postgres` / `root`)
+   - Quick start via Docker:
+     ```sh
+     docker run -d --name jt-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=db_ikag -p 5432:5432 postgres:16-alpine
+     ```
+3. **Redis 7+** (used by `RedisCacheModule` and `DynamicRateLimitModule`; fails open / falls back when disabled or unreachable):
+   - Quick start via Docker:
+     ```sh
+     docker run -d --name jt-redis -p 6379:6379 redis:7-alpine
+     ```
+4. **Docker** *(optional, for containerized builds/runs)*
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
+---
 
-## Run tasks
+## Getting Started
 
-To build the library use:
-
-```sh
-npx nx run pkg1:build
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx run <project-name>:<target>
-```
-
-These targets are either [inferred automatically](https://nx.dev/docs/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/docs/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
-
-```
-npx nx release
-```
-
-Pass `--dry-run` to see what would happen without actually releasing the library.
-
-[Learn more about Nx release &raquo;](https://nx.dev/docs/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Keep TypeScript project references up to date
-
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
-
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+### 1. Install Dependencies
 
 ```sh
-npx nx sync
+yarn install
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+### 2. Configure Environment Files (`apps/ikagi-api`)
+
+Copy the example templates if `.env` / `.env.dev` are not already present:
+
+- [`apps/ikagi-api/.env`](apps/ikagi-api/.env) — used by TypeORM CLI migrations (copy from [`apps/ikagi-api/.env.example`](apps/ikagi-api/.env.example))
+- [`apps/ikagi-api/.env.dev`](apps/ikagi-api/.env.dev) — used by NestJS runtime and Docker `--env-file` (copy from [`apps/ikagi-api/.env.dev.example`](apps/ikagi-api/.env.dev.example))
+
+### 3. Build Shared Library & Run Database Migrations
 
 ```sh
-npx nx sync:check
+yarn --cwd libs/nest-lib build
+yarn migration:run ikagi-api
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
-
-## Nx Cloud
-
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/docs/features/ci-features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/docs/features/ci-features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/docs/features/ci-features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/docs/features/ci-features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Set up CI (non-Github Actions CI)
-
-**Note:** This is only required if your CI provider is not GitHub Actions.
-
-Use the following command to configure a CI workflow for your workspace:
+Check migration status at any time:
 
 ```sh
-npx nx g ci-workflow
+yarn migration:show ikagi-api
 ```
 
-[Learn more about Nx on CI](https://nx.dev/docs/features/ci-features?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
+## Running the App
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+### Local Development (`ikagi-api`)
 
-[Install Nx Console &raquo;](https://nx.dev/docs/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```sh
+yarn nx serve @org/ikagi-api
+```
 
-## 🔗 Learn More
+Once running on `http://localhost:3000`:
 
-- [Nx Documentation](https://nx.dev/docs)
-- [Crafting Your Workspace Tutorial](https://nx.dev/docs/getting-started/tutorials/crafting-your-workspace)
-- [Module Boundaries](https://nx.dev/docs/features/enforce-module-boundaries)
-- [Releasing Packages](https://nx.dev/docs/features/manage-releases)
-- [Nx Plugins](https://nx.dev/docs/concepts/nx-plugins)
-- [Nx Cloud](https://nx.dev/nx-cloud)
+- **Health Check:** `GET http://localhost:3000/`
+- **Full API Swagger UI:** `http://localhost:3000/docs`
+- **Auth-Only Swagger UI:** `http://localhost:3000/docs/auth`
+- **Auth OpenAPI JSON:** `http://localhost:3000/docs/auth-json`
+- **Auth Endpoints:** `/api/auth/register`, `/api/auth/login`, `/api/auth/google`, `/api/auth/facebook`, `/api/auth/logout`, `/api/auth/change-password`, `/api/auth/me`
 
-## 💬 Community
+### Build & Typecheck
 
-Join the Nx community:
+```sh
+yarn nx run-many -t build typecheck
+```
 
-- [Discord](https://go.nx.dev/community)
-- [X (Twitter)](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-- [Blog](https://nx.dev/blog)
+### Docker (`ikagi-api`)
+
+`apps/ikagi-api/Dockerfile` builds `@jt-workspace/nest-lib` and `@org/ikagi-api`:
+
+```sh
+yarn docker:build ikagi-api
+yarn docker:run ikagi-api
+yarn docker:logs ikagi-api
+yarn docker:stop ikagi-api
+```
+
+> **Note:** `yarn docker:run ikagi-api` defaults `DB_HOST=host.docker.internal` and `REDIS_HOST=host.docker.internal` so the container can reach PostgreSQL and Redis running on your host machine.
+
+---
+
+## Database Migration Commands
+
+**From workspace root:**
+
+```sh
+yarn migration:create ikagi-api <MigrationName>
+yarn migration:generate ikagi-api <MigrationName>
+yarn migration:run ikagi-api
+yarn migration:revert ikagi-api
+yarn migration:show ikagi-api
+```
+
+**From `apps/ikagi-api`:**
+
+```sh
+yarn --cwd apps/ikagi-api migration:run
+yarn --cwd apps/ikagi-api migration:revert
+yarn --cwd apps/ikagi-api migration:show
+```
+
+---
+
+## Git Hooks & Conventional Commits
+
+Husky and Commitlint enforce:
+
+- **Pre-commit:** `yarn nx run-many -t typecheck`
+- **Commit message:** `<type>(<optional-scope>): <description>`
+  - Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `build`, `ci`, `perf`, `revert`
+  - Scopes: `workspace`, `nest-lib`, `ikagi-api`, `auth`, `audit`, `cache`, `docker`, `deps`
+  - Example: `feat(auth): add Google OAuth2 login`

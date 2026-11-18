@@ -1,1 +1,1 @@
-yarn nx affected -t typecheck
+yarn nx run-many -t typecheck
