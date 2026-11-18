@@ -1,0 +1,96 @@
+{
+  "name": "@org/ikagi-api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "migration:create": "node ../../tools/scripts/typeorm-migration.mjs create --app=ikagi-api",
+    "migration:generate": "node ../../tools/scripts/typeorm-migration.mjs generate --app=ikagi-api",
+    "migration:run": "node ../../tools/scripts/typeorm-migration.mjs run --app=ikagi-api",
+    "migration:revert": "node ../../tools/scripts/typeorm-migration.mjs revert --app=ikagi-api",
+    "migration:show": "node ../../tools/scripts/typeorm-migration.mjs show --app=ikagi-api"
+  },
+  "nx": {
+    "targets": {
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/ikagi-api/dist/package.json",
+          "{workspaceRoot}/apps/ikagi-api/dist/yarn.lock"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/ikagi-api/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@org/ikagi-api:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@org/ikagi-api:build:development"
+          },
+          "production": {
+            "buildTarget": "@org/ikagi-api:build:production"
+          }
+        },
+        "readyWhen": {
+          "signal": true
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@jt-workspace/nest-lib": "workspace:*",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.0",
+    "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/swagger": "^11.0.0",
+    "@nestjs/typeorm": "^11.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0",
+    "swagger-ui-express": "^5.0.1",
+    "tslib": "^2.3.0",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.0.0"
+  }
+}

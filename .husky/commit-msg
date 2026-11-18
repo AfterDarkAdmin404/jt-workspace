@@ -1,0 +1,15 @@
+yarn commitlint --edit "$1" || {
+  echo ""
+  echo "Commit message must follow Conventional Commits: <type>(<optional-scope>): <description>"
+  echo ""
+  echo "Allowed types:  feat, fix, chore, docs, refactor, test, build, ci, perf, revert"
+  echo "Workspace scopes: workspace, nest-lib, ikagi-api, auth, audit, cache, docker, deps"
+  echo ""
+  echo "Examples:"
+  echo "  chore(workspace): init nx monorepo"
+  echo "  feat(auth): add Google and Facebook OAuth strategies"
+  echo "  fix(ikag-api): resolve Swagger docs path prefix"
+  echo "  docs(workspace): update setup instructions"
+  echo ""
+  exit 1
+}

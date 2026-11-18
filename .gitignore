@@ -48,3 +48,25 @@ Thumbs.db
 .nx/polygraph
 .nx/self-healing
 .nx/migrate-runs
+
+# Next.js
+.next
+out
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Environment files
+.env
+.env.dev
+!.env.example
+!.env.dev.example
+apps/*/.env.dev
+apps/*/.env.local
+
+# Others
