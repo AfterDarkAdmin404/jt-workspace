@@ -5,6 +5,10 @@
   "nx": {
     "sourceRoot": "apps/ikagi-web/src"
   },
+  "scripts": {
+    "generate:api": "node scripts/generate-api.mjs",
+    "generate:api:fetch": "node scripts/generate-api.mjs --fetch"
+  },
   "dependencies": {
     "next": "~16.1.6",
     "react": "^19.0.0",
