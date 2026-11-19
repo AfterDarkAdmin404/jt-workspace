@@ -17,18 +17,10 @@ Nx monorepo managed with **Yarn 4 (Berry)** containing:
    ```sh
    corepack enable
    ```
-2. **PostgreSQL 14+** (required for `ikagi-api` and TypeORM migrations):
-   - Default dev database: `db_ikag` on `localhost:5432` (`postgres` / `root`)
-   - Quick start via Docker:
-     ```sh
-     docker run -d --name jt-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=db_ikag -p 5432:5432 postgres:16-alpine
-     ```
-3. **Redis 7+** (used by `RedisCacheModule` and `DynamicRateLimitModule`; fails open / falls back when disabled or unreachable):
-   - Quick start via Docker:
-     ```sh
-     docker run -d --name jt-redis -p 6379:6379 redis:7-alpine
-     ```
-4. **Docker** _(optional, for containerized builds/runs)_
+2. **PostgreSQL 16 & Redis 7 (via Docker Compose):**
+   - Managed via [`docker-compose.yml`](./docker-compose.yml) (`jt-postgres` on `localhost:5433`, `db_ikag`, `postgres`/`root`, and `jt-redis` on `localhost:6379`).
+   - See [docs/docker-infrastructure.md](./docs/docker-infrastructure.md) for lifecycle scripts (`infra:down`, `infra:logs`, `infra:reset`), `.env` host replacement rules, and troubleshooting.
+3. **Docker** _(required for `infra:up` and containerized builds/runs)_
 
 ---
 
@@ -40,14 +32,25 @@ Nx monorepo managed with **Yarn 4 (Berry)** containing:
 yarn install
 ```
 
-### 2. Configure Environment Files (`apps/ikagi-api`)
+### 2. Start Infrastructure First (Docker Compose)
+
+PostgreSQL and Redis must be running before running migrations or starting `ikagi-api`:
+
+```sh
+yarn infra:up
+docker compose ps
+```
+
+Confirm both `jt-postgres` and `jt-redis` report `(healthy)`.
+
+### 3. Configure Environment Files (`apps/ikagi-api`)
 
 Copy the example templates if `.env` / `.env.dev` are not already present:
 
 - [`apps/ikagi-api/.env`](apps/ikagi-api/.env) — used by TypeORM CLI migrations (copy from [`apps/ikagi-api/.env.example`](apps/ikagi-api/.env.example))
 - [`apps/ikagi-api/.env.dev`](apps/ikagi-api/.env.dev) — used by NestJS runtime and Docker `--env-file` (copy from [`apps/ikagi-api/.env.dev.example`](apps/ikagi-api/.env.dev.example))
 
-### 3. Build Shared Library & Run Database Migrations
+### 4. Build Shared Library & Run Database Migrations
 
 ```sh
 yarn --cwd libs/nest-lib build
@@ -73,9 +76,8 @@ yarn nx serve @org/ikagi-api
 Once running on `http://localhost:3000`:
 
 - **Health Check:** `GET http://localhost:3000/`
-- **Full API Swagger UI:** `http://localhost:3000/docs`
-- **Auth-Only Swagger UI:** `http://localhost:3000/docs/auth`
-- **Auth OpenAPI JSON:** `http://localhost:3000/docs/auth-json`
+- **Full API Swagger UI:** `http://localhost:3000/docs` (OpenAPI JSON: `http://localhost:3000/docs-json`)
+- **Per-Service Swagger Docs (auto-discovered):** `/docs/<service>` and `/docs/<service>-json` (for example, `http://localhost:3000/docs/auth` and `http://localhost:3000/docs/auth-json`). Any new feature module with a routed controller is automatically exposed under `/docs/<service>` via `setupSwagger` in `@jt-workspace/nest-lib` (or customized with `@SwaggerService({ name, title, description })`).
 - **Auth Endpoints:** `/api/auth/register`, `/api/auth/login`, `/api/auth/google`, `/api/auth/facebook`, `/api/auth/logout`, `/api/auth/change-password`, `/api/auth/me`
 
 ### Build & Typecheck
