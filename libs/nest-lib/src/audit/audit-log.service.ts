@@ -19,7 +19,7 @@ export class AuditLogService {
     private readonly auditLogRepo: Repository<UserActionLog>,
     @Optional()
     @Inject(AUDIT_LOG_OPTIONS)
-    private readonly options?: AuditLogModuleOptions
+    private readonly options?: AuditLogModuleOptions,
   ) {}
 
   async logAction(payload: LogUserActionDto): Promise<UserActionLog | null> {
@@ -53,7 +53,7 @@ export class AuditLogService {
     } catch (err) {
       this.logger.error(
         `Failed to persist audit log for action "${normalizedAction}"`,
-        err instanceof Error ? err.stack : String(err)
+        err instanceof Error ? err.stack : String(err),
       );
       if (this.options?.failSilently !== false) {
         return null;
@@ -66,7 +66,7 @@ export class AuditLogService {
     req: Request,
     userId: string | null,
     action: UserActionInput,
-    metadata?: Record<string, unknown>
+    metadata?: Record<string, unknown>,
   ): Promise<UserActionLog | null> {
     return this.logAction({
       userId,

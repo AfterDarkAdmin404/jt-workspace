@@ -27,8 +27,7 @@ export interface RateLimitModuleOptions {
   redis?: RedisConnectionOptions;
 }
 
-export interface RateLimitAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface RateLimitAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
   useFactory: (
     ...args: any[]
@@ -40,7 +39,7 @@ export const RATE_LIMIT_PROFILE_KEY = 'RATE_LIMIT_PROFILE_KEY';
 
 export function parseRateLimitProfiles(
   raw?: string,
-  logger = new Logger('RateLimitConfig')
+  logger = new Logger('RateLimitConfig'),
 ): Record<string, RateLimitRule> {
   if (!raw || !raw.trim()) {
     return {};
@@ -50,7 +49,7 @@ export function parseRateLimitProfiles(
     const parsed = JSON.parse(raw) as unknown;
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
       logger.warn(
-        'RATE_LIMIT_PROFILES must be a JSON object; falling back to global defaults'
+        'RATE_LIMIT_PROFILES must be a JSON object; falling back to global defaults',
       );
       return {};
     }
@@ -71,14 +70,14 @@ export function parseRateLimitProfiles(
         };
       } else {
         logger.warn(
-          `Ignoring invalid rate-limit profile "${name}"; expected { ttl: number > 0, limit: number > 0 }`
+          `Ignoring invalid rate-limit profile "${name}"; expected { ttl: number > 0, limit: number > 0 }`,
         );
       }
     }
     return validProfiles;
   } catch (err) {
     logger.warn(
-      `Malformed RATE_LIMIT_PROFILES JSON (${err instanceof Error ? err.message : String(err)}); falling back to global defaults`
+      `Malformed RATE_LIMIT_PROFILES JSON (${err instanceof Error ? err.message : String(err)}); falling back to global defaults`,
     );
     return {};
   }

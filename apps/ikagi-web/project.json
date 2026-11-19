@@ -1,0 +1,21 @@
+{
+  "name": "@org/ikagi-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ikagi-web/src",
+  "projectType": "application",
+  "targets": {
+    "generate-api": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "node scripts/generate-api.mjs",
+        "cwd": "apps/ikagi-web"
+      },
+      "configurations": {
+        "fetch": {
+          "command": "node scripts/generate-api.mjs --fetch"
+        }
+      }
+    }
+  }
+}

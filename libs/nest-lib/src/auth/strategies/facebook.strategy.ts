@@ -8,7 +8,7 @@ import { AuthService } from '../auth.service';
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor(
     configService: ConfigService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {
     super({
       clientID:
@@ -26,13 +26,13 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     _accessToken: string,
     _refreshToken: string,
     profile: Profile,
-    done: (error: unknown, user?: unknown) => void
+    done: (error: unknown, user?: unknown) => void,
   ): Promise<void> {
     const email = profile.emails?.[0]?.value;
     if (!email) {
       return done(
         new UnauthorizedException('Facebook account has no email address'),
-        false
+        false,
       );
     }
 

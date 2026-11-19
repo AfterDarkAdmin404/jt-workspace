@@ -34,7 +34,7 @@ jobs:
       - run: yarn install --immutable
 
       # Prepend any command with "nx record --" to record its logs to Nx Cloud
-      - run: yarn nx record -- yarn nx format:check --base="remotes/origin/main"
+      - run: yarn nx record -- yarn nx format:check --all
       - run: yarn nx run-many -t lint test build typecheck e2e
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/docs/features/ci-features/self-healing-ci
       - run: yarn nx fix-ci

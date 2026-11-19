@@ -64,7 +64,7 @@ export class CreateUsersTable1794989500000 implements MigrationInterface {
           },
         ],
       }),
-      true
+      true,
     );
 
     await queryRunner.createIndices('users', [

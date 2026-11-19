@@ -26,7 +26,7 @@ export class RedisThrottlerStorage
   constructor(
     @Optional()
     @Inject(RATE_LIMIT_OPTIONS)
-    private readonly options?: RateLimitModuleOptions
+    private readonly options?: RateLimitModuleOptions,
   ) {
     const basePrefix = options?.redis?.keyPrefix ?? 'ikagi:';
     this.keyPrefix = `${basePrefix}throttle:`;
@@ -65,14 +65,14 @@ export class RedisThrottlerStorage
     this.client.on('error', (err: unknown) => {
       this.isReady = false;
       this.logger.warn(
-        `Redis throttler unavailable (failing open): ${err instanceof Error ? err.message : String(err)}`
+        `Redis throttler unavailable (failing open): ${err instanceof Error ? err.message : String(err)}`,
       );
     });
 
     this.client.connect().catch((err: unknown) => {
       this.isReady = false;
       this.logger.warn(
-        `Initial Redis throttler connection failed (failing open): ${err instanceof Error ? err.message : String(err)}`
+        `Initial Redis throttler connection failed (failing open): ${err instanceof Error ? err.message : String(err)}`,
       );
     });
   }
@@ -88,7 +88,7 @@ export class RedisThrottlerStorage
     ttl: number,
     limit: number,
     blockDuration: number,
-    throttlerName: string
+    throttlerName: string,
   ): Promise<ThrottlerStorageRecord> {
     const timeToExpireSec = Math.ceil(ttl / 1000);
     if (!this.client || !this.isReady) {
@@ -127,7 +127,7 @@ export class RedisThrottlerStorage
       };
     } catch (err) {
       this.logger.warn(
-        `Redis throttler increment failed (failing open): ${err instanceof Error ? err.message : String(err)}`
+        `Redis throttler increment failed (failing open): ${err instanceof Error ? err.message : String(err)}`,
       );
       return {
         totalHits: 0,

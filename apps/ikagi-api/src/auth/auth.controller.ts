@@ -34,13 +34,14 @@ interface AuthenticatedRequest extends Request {
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly auditLogService: AuditLogService
-  ) { }
+    private readonly auditLogService: AuditLogService,
+  ) {}
 
   @Post('register')
   @ApiOperation({
     summary: 'Register a local user',
-    description: 'Creates a new local user account and returns a JWT access token.',
+    description:
+      'Creates a new local user account and returns a JWT access token.',
   })
   @ApiBody({ type: RegisterLocalDto })
   @ApiResponse({
@@ -56,7 +57,7 @@ export class AuthController {
       req,
       result.user.id,
       UserActionType.REGISTER,
-      { provider: result.user.provider }
+      { provider: result.user.provider },
     );
     return result;
   }
@@ -77,14 +78,14 @@ export class AuthController {
   async login(@Req() req: Request, @Body() body: LoginDto) {
     const user = await this.authService.validateLocalUser(
       body.identifier,
-      body.password
+      body.password,
     );
     const result = this.authService.login(user);
     await this.auditLogService.logFromRequest(
       req,
       user.id,
       UserActionType.LOGIN,
-      { provider: user.provider }
+      { provider: user.provider },
     );
     return result;
   }
@@ -104,7 +105,8 @@ export class AuthController {
   @Get('google/callback')
   @ApiOperation({
     summary: 'Google OAuth2 callback',
-    description: 'Handles Google OAuth2 callback and issues a JWT access token.',
+    description:
+      'Handles Google OAuth2 callback and issues a JWT access token.',
   })
   @ApiResponse({
     status: 200,
@@ -118,7 +120,7 @@ export class AuthController {
       req,
       req.user.id,
       UserActionType.LOGIN,
-      { provider: 'google' }
+      { provider: 'google' },
     );
     return result;
   }
@@ -138,7 +140,8 @@ export class AuthController {
   @Get('facebook/callback')
   @ApiOperation({
     summary: 'Facebook OAuth2 callback',
-    description: 'Handles Facebook OAuth2 callback and issues a JWT access token.',
+    description:
+      'Handles Facebook OAuth2 callback and issues a JWT access token.',
   })
   @ApiResponse({
     status: 200,
@@ -152,7 +155,7 @@ export class AuthController {
       req,
       req.user.id,
       UserActionType.LOGIN,
-      { provider: 'facebook' }
+      { provider: 'facebook' },
     );
     return result;
   }
@@ -174,7 +177,7 @@ export class AuthController {
     await this.auditLogService.logFromRequest(
       req,
       req.user.id,
-      UserActionType.LOGOUT
+      UserActionType.LOGOUT,
     );
     return { success: true, message: 'Logged out successfully' };
   }
@@ -184,7 +187,8 @@ export class AuthController {
   @Post('change-password')
   @ApiOperation({
     summary: 'Change authenticated user password',
-    description: 'Verifies current password, updates password hash, and records audit log.',
+    description:
+      'Verifies current password, updates password hash, and records audit log.',
   })
   @ApiBody({ type: ChangePasswordDto })
   @ApiResponse({
@@ -193,20 +197,23 @@ export class AuthController {
     description: 'Password updated successfully',
   })
   @ApiResponse({ status: 400, description: 'Validation failed' })
-  @ApiResponse({ status: 401, description: 'Unauthorized or wrong current password' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized or wrong current password',
+  })
   async changePassword(
     @Req() req: AuthenticatedRequest,
-    @Body() body: ChangePasswordDto
+    @Body() body: ChangePasswordDto,
   ) {
     const result = await this.authService.changePassword(
       req.user.id,
       body.currentPassword,
-      body.newPassword
+      body.newPassword,
     );
     await this.auditLogService.logFromRequest(
       req,
       req.user.id,
-      UserActionType.CHANGE_PASSWORD
+      UserActionType.CHANGE_PASSWORD,
     );
     return result;
   }
@@ -216,7 +223,8 @@ export class AuthController {
   @Get('me')
   @ApiOperation({
     summary: 'Get authenticated user profile',
-    description: 'Returns the currently authenticated user extracted from the JWT token.',
+    description:
+      'Returns the currently authenticated user extracted from the JWT token.',
   })
   @ApiResponse({
     status: 200,

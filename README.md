@@ -2,12 +2,12 @@
 
 Nx monorepo managed with **Yarn 4 (Berry)** containing:
 
-| Project | Package Name | Description |
-| :--- | :--- | :--- |
-| `apps/ikagi-api` | `@org/ikagi-api` | NestJS backend API (Auth, Audit Logs, Redis Cache & Rate Limiting, Swagger) |
-| `apps/ikagi-web` | `@org/ikagi-web` | Next.js frontend application |
-| `libs/nest-lib` | `@jt-workspace/nest-lib` | Shared NestJS library (TypeORM entities/migrations, Auth, Audit, Cache, Rate Limit) |
-| `libs/next-lib` | `@org/next-lib` | Shared Next.js/React library |
+| Project          | Package Name             | Description                                                                         |
+| :--------------- | :----------------------- | :---------------------------------------------------------------------------------- |
+| `apps/ikagi-api` | `@org/ikagi-api`         | NestJS backend API (Auth, Audit Logs, Redis Cache & Rate Limiting, Swagger)         |
+| `apps/ikagi-web` | `@org/ikagi-web`         | Next.js frontend application                                                        |
+| `libs/nest-lib`  | `@jt-workspace/nest-lib` | Shared NestJS library (TypeORM entities/migrations, Auth, Audit, Cache, Rate Limit) |
+| `libs/next-lib`  | `@org/next-lib`          | Shared Next.js/React library                                                        |
 
 ---
 
@@ -28,7 +28,7 @@ Nx monorepo managed with **Yarn 4 (Berry)** containing:
      ```sh
      docker run -d --name jt-redis -p 6379:6379 redis:7-alpine
      ```
-4. **Docker** *(optional, for containerized builds/runs)*
+4. **Docker** _(optional, for containerized builds/runs)_
 
 ---
 
@@ -96,6 +96,11 @@ yarn docker:stop ikagi-api
 ```
 
 > **Note:** `yarn docker:run ikagi-api` defaults `DB_HOST=host.docker.internal` and `REDIS_HOST=host.docker.internal` so the container can reach PostgreSQL and Redis running on your host machine.
+
+### CI/CD & GCP Release
+
+- Main CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+- `ikagi-api` Release (Dry-Run / GCP Cloud Run): [`.github/workflows/ikagi-api-release.yml`](.github/workflows/ikagi-api-release.yml) — see [docs/ci-cd-gcp.md](docs/ci-cd-gcp.md) for activation variables and secrets.
 
 ---
 

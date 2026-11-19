@@ -33,7 +33,7 @@ function parseArgs(argv) {
   const [action, ...rest] = argv;
   if (!action || !VALID_ACTIONS.has(action)) {
     console.error(
-      `Invalid or missing action "${action ?? ''}". Expected one of: ${[...VALID_ACTIONS].join(', ')}`
+      `Invalid or missing action "${action ?? ''}". Expected one of: ${[...VALID_ACTIONS].join(', ')}`,
     );
     process.exit(1);
   }
@@ -71,10 +71,14 @@ function parseArgs(argv) {
 }
 
 function main() {
-  const { action, appName, migrationName, extraFlags } = parseArgs(process.argv.slice(2));
+  const { action, appName, migrationName, extraFlags } = parseArgs(
+    process.argv.slice(2),
+  );
 
   if (!appName) {
-    console.error('Missing target app name. Example: yarn migration:create ikagi-api InitSchema');
+    console.error(
+      'Missing target app name. Example: yarn migration:create ikagi-api InitSchema',
+    );
     process.exit(1);
   }
 
@@ -93,11 +97,20 @@ function main() {
   const migrationsDir = path.join(appDir, 'src', 'database', 'migrations');
   const appTsConfig = path.join(appDir, 'tsconfig.app.json');
   const fallbackTsConfig = path.join(appDir, 'tsconfig.json');
-  const tsConfigPath = fs.existsSync(appTsConfig) ? appTsConfig : fallbackTsConfig;
+  const tsConfigPath = fs.existsSync(appTsConfig)
+    ? appTsConfig
+    : fallbackTsConfig;
 
-  const typeormCli = path.join(workspaceRoot, 'node_modules', 'typeorm', 'cli.js');
+  const typeormCli = path.join(
+    workspaceRoot,
+    'node_modules',
+    'typeorm',
+    'cli.js',
+  );
   if (!fs.existsSync(typeormCli)) {
-    console.error(`TypeORM CLI not found at ${typeormCli}. Run "yarn install" first.`);
+    console.error(
+      `TypeORM CLI not found at ${typeormCli}. Run "yarn install" first.`,
+    );
     process.exit(1);
   }
 
@@ -113,7 +126,7 @@ function main() {
   if (action === 'create' || action === 'generate') {
     if (!migrationName) {
       console.error(
-        `Missing migration name for "migration:${action}". Example: yarn migration:${action} ${appName} CreateUsersTable`
+        `Missing migration name for "migration:${action}". Example: yarn migration:${action} ${appName} CreateUsersTable`,
       );
       process.exit(1);
     }

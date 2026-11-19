@@ -16,7 +16,7 @@ export class RedisCacheService {
     private readonly cacheManager: Cache,
     @Optional()
     @Inject(REDIS_CACHE_OPTIONS)
-    private readonly options?: RedisCacheModuleOptions
+    private readonly options?: RedisCacheModuleOptions,
   ) {
     this.keyPrefix = options?.keyPrefix ?? '';
   }
@@ -34,7 +34,7 @@ export class RedisCacheService {
       return value ?? undefined;
     } catch (err) {
       this.logger.warn(
-        `Cache GET failed for key "${key}": ${err instanceof Error ? err.message : String(err)}`
+        `Cache GET failed for key "${key}": ${err instanceof Error ? err.message : String(err)}`,
       );
       return undefined;
     }
@@ -47,7 +47,7 @@ export class RedisCacheService {
       await this.cacheManager.set(this.prefixKey(key), value, ttlMs);
     } catch (err) {
       this.logger.warn(
-        `Cache SET failed for key "${key}": ${err instanceof Error ? err.message : String(err)}`
+        `Cache SET failed for key "${key}": ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }
@@ -57,7 +57,7 @@ export class RedisCacheService {
       await this.cacheManager.del(this.prefixKey(key));
     } catch (err) {
       this.logger.warn(
-        `Cache DEL failed for key "${key}": ${err instanceof Error ? err.message : String(err)}`
+        `Cache DEL failed for key "${key}": ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }
@@ -65,7 +65,7 @@ export class RedisCacheService {
   async getOrSet<T>(
     key: string,
     factory: () => Promise<T>,
-    ttlSeconds?: number
+    ttlSeconds?: number,
   ): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached !== undefined && cached !== null) {
@@ -81,7 +81,7 @@ export class RedisCacheService {
       await this.cacheManager.clear();
     } catch (err) {
       this.logger.warn(
-        `Cache CLEAR failed: ${err instanceof Error ? err.message : String(err)}`
+        `Cache CLEAR failed: ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }

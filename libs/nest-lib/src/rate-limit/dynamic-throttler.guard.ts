@@ -1,9 +1,4 @@
-import {
-  ExecutionContext,
-  Inject,
-  Injectable,
-  Optional,
-} from '@nestjs/common';
+import { ExecutionContext, Inject, Injectable, Optional } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import {
   ThrottlerGuard,
@@ -27,7 +22,7 @@ export class DynamicThrottlerGuard extends ThrottlerGuard {
     reflector: Reflector,
     @Optional()
     @Inject(RATE_LIMIT_OPTIONS)
-    private readonly rateLimitOptions?: RateLimitModuleOptions
+    private readonly rateLimitOptions?: RateLimitModuleOptions,
   ) {
     super(options, storageService, reflector);
   }
@@ -46,7 +41,7 @@ export class DynamicThrottlerGuard extends ThrottlerGuard {
   }
 
   protected override async getTracker(
-    req: Record<string, any>
+    req: Record<string, any>,
   ): Promise<string> {
     const forwardedFor = req.headers?.['x-forwarded-for'];
     if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
@@ -63,7 +58,7 @@ export class DynamicThrottlerGuard extends ThrottlerGuard {
   protected override generateKey(
     context: ExecutionContext,
     suffix: string,
-    _name: string
+    _name: string,
   ): string {
     const metadata = this.getDecoratorMetadata(context);
     const profileLabel =
@@ -78,7 +73,7 @@ export class DynamicThrottlerGuard extends ThrottlerGuard {
   }
 
   protected override async handleRequest(
-    requestProps: ThrottlerRequest
+    requestProps: ThrottlerRequest,
   ): Promise<boolean> {
     const { context } = requestProps;
     const metadata = this.getDecoratorMetadata(context);
@@ -96,7 +91,7 @@ export class DynamicThrottlerGuard extends ThrottlerGuard {
   }
 
   private getDecoratorMetadata(
-    context: ExecutionContext
+    context: ExecutionContext,
   ): DynamicRateLimitMetadata | undefined {
     return this.reflector.getAllAndOverride<
       DynamicRateLimitMetadata | undefined
@@ -117,7 +112,7 @@ export class DynamicThrottlerGuard extends ThrottlerGuard {
       const profile = this.rateLimitOptions?.profiles?.[metadata];
       if (!profile) {
         this.logger.warn(
-          `Rate-limit profile "${metadata}" not found in RATE_LIMIT_PROFILES; falling back to default (${fallback.limit} req / ${fallback.ttl}s)`
+          `Rate-limit profile "${metadata}" not found in RATE_LIMIT_PROFILES; falling back to default (${fallback.limit} req / ${fallback.ttl}s)`,
         );
         return fallback;
       }

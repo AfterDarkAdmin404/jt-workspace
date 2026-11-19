@@ -1,5 +1,8 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { ThrottlerModule, type ThrottlerModuleOptions } from '@nestjs/throttler';
+import {
+  ThrottlerModule,
+  type ThrottlerModuleOptions,
+} from '@nestjs/throttler';
 import { DynamicThrottlerGuard } from './dynamic-throttler.guard';
 import {
   RATE_LIMIT_OPTIONS,

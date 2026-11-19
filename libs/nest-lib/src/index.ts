@@ -38,3 +38,5 @@ export * from './rate-limit/dynamic-throttler.guard';
 export * from './rate-limit/redis-throttler.storage';
 export * from './rate-limit/decorators/dynamic-rate-limit.decorator';
 export * from './rate-limit/interfaces/rate-limit-options.interface';
+
+export * from './swagger/setup-swagger';

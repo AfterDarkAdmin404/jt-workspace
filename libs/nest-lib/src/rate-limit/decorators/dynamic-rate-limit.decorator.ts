@@ -15,10 +15,10 @@ export type DynamicRateLimitMetadata = string | RateLimitRule | null;
  * - `@DynamicRateLimit({ ttl: 30, limit: 10 })` applies an inline override
  */
 export function DynamicRateLimit(
-  profileOrOptions?: string | RateLimitRule
+  profileOrOptions?: string | RateLimitRule,
 ): MethodDecorator & ClassDecorator {
   return applyDecorators(
     SetMetadata(RATE_LIMIT_PROFILE_KEY, profileOrOptions ?? null),
-    UseGuards(DynamicThrottlerGuard)
+    UseGuards(DynamicThrottlerGuard),
   );
 }

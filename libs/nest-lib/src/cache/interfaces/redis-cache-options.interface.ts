@@ -12,8 +12,10 @@ export interface RedisCacheModuleOptions {
   ttl?: number;
 }
 
-export interface RedisCacheAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface RedisCacheAsyncOptions extends Pick<
+  ModuleMetadata,
+  'imports'
+> {
   inject?: any[];
   useFactory: (
     ...args: any[]

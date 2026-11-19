@@ -29,8 +29,8 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepo: Repository<User>,
-    private readonly jwtService: JwtService
-  ) { }
+    private readonly jwtService: JwtService,
+  ) {}
 
   async validateLocalUser(identifier: string, password: string): Promise<User> {
     const user = await this.usersRepo
@@ -79,7 +79,7 @@ export class AuthService {
 
   async validateOAuthUser(
     provider: Exclude<AuthProvider, 'local'>,
-    profile: OAuthProfile
+    profile: OAuthProfile,
   ): Promise<User> {
     const providerField = provider === 'google' ? 'googleId' : 'facebookId';
 
@@ -117,11 +117,11 @@ export class AuthService {
   async changePassword(
     userId: string,
     currentPassword: string,
-    newPassword: string
+    newPassword: string,
   ): Promise<{ success: boolean; message: string }> {
     if (!currentPassword || !newPassword) {
       throw new BadRequestException(
-        'Both currentPassword and newPassword are required'
+        'Both currentPassword and newPassword are required',
       );
     }
 
@@ -133,7 +133,7 @@ export class AuthService {
 
     if (!user || !user.passwordHash) {
       throw new UnauthorizedException(
-        'Password change is not available for this account'
+        'Password change is not available for this account',
       );
     }
 
