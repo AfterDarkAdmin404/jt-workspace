@@ -3012,6 +3012,12 @@ __metadata:
     "@nestjs/swagger": "npm:^11.0.0"
     "@nestjs/throttler": "npm:^6.4.0"
     "@nestjs/typeorm": "npm:^11.0.0"
+    "@opentelemetry/api": "npm:^1.10.0"
+    "@opentelemetry/auto-instrumentations-node": "npm:^0.83.1"
+    "@opentelemetry/exporter-trace-otlp-http": "npm:^0.301.2"
+    "@opentelemetry/resources": "npm:^3.1.1"
+    "@opentelemetry/sdk-node": "npm:^0.301.2"
+    "@opentelemetry/semantic-conventions": "npm:^1.45.0"
     bcrypt: "npm:^5.1.1"
     cache-manager: "npm:^6.4.0"
     class-transformer: "npm:^0.5.1"
@@ -3370,6 +3376,25 @@ __metadata:
     "@nestjs/websockets":
       optional: true
   checksum: 10c0/627e2909c4a25b3c56a4e57a432484fd44e952e33097d8b8c261cc68a585a7c947f9bd39c151a9e4327217401cf18a4ffaf1a3f660ffe70b69d7868c3e589e6f
+  languageName: node
+  linkType: hard
+
+"@nestjs/idempotency@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@nestjs/idempotency@npm:0.0.4"
+  peerDependencies:
+    "@nestjs/common": ^11.0.0 || ^12.0.0
+    "@nestjs/core": ^11.0.0 || ^12.0.0
+    "@nestjs/microservices": ^11.0.0 || ^12.0.0
+    graphql: ^16.0.0 || ^17.0.0
+    reflect-metadata: ^0.1.13 || ^0.2.0
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    "@nestjs/microservices":
+      optional: true
+    graphql:
+      optional: true
+  checksum: 10c0/abd6ef83f19bf155beb47a907c467b0967310148e59814d7167bb0d4c75bde2490565a7f296c1d1cd4c9cd94ae62b36bef14cc42726d6c7327a7acb3f4f761c2
   languageName: node
   linkType: hard
 
@@ -5428,6 +5453,7 @@ __metadata:
     "@nestjs/common": "npm:^11.0.0"
     "@nestjs/config": "npm:^4.0.0"
     "@nestjs/core": "npm:^11.0.0"
+    "@nestjs/idempotency": "npm:^0.0.4"
     "@nestjs/jwt": "npm:^11.0.0"
     "@nestjs/passport": "npm:^11.0.0"
     "@nestjs/platform-express": "npm:^11.0.0"

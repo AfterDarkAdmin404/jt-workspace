@@ -46,5 +46,6 @@ export * from './telemetry/tracing';
 export * from './telemetry/telemetry.service';
 export * from './telemetry/telemetry.module';
 export * from './telemetry/interceptors/trace-context.interceptor';
+export * from './telemetry/middleware/trace-context.middleware';
 export * from './telemetry/filters/trace-exception.filter';
 
