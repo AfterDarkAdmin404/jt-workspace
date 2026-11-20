@@ -1,5 +1,6 @@
+import './instrumentation';
 import { setupSwagger } from '@jt-workspace/nest-lib';
-import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
+import { Logger, RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -7,13 +8,16 @@ import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', 1);
 
   const globalPrefix = 'api';
+  const configService = app.get(ConfigService);
+  const corsOrigin = configService.get<string>('CORS_ORIGIN');
+  const port = Number(configService.get<string>('PORT', '3000')) || 3000;
+
+  app.set('trust proxy', 1);
   app.setGlobalPrefix(globalPrefix, {
     exclude: [{ path: '/', method: RequestMethod.GET }],
   });
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -24,9 +28,9 @@ async function bootstrap() {
       },
     }),
   );
-
-  const configService = app.get(ConfigService);
-  const corsOrigin = configService.get<string>('CORS_ORIGIN');
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
   app.enableCors({
     origin: corsOrigin
       ? corsOrigin.split(',').map((origin) => origin.trim())
@@ -36,7 +40,6 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  const port = Number(configService.get<string>('PORT', '3000')) || 3000;
   setupSwagger(app, configService, port);
 
   await app.listen(port);

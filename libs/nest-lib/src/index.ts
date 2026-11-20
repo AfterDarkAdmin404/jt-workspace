@@ -40,3 +40,11 @@ export * from './rate-limit/decorators/dynamic-rate-limit.decorator';
 export * from './rate-limit/interfaces/rate-limit-options.interface';
 
 export * from './swagger/setup-swagger';
+
+export * from './telemetry/interfaces/telemetry-options.interface';
+export * from './telemetry/tracing';
+export * from './telemetry/telemetry.service';
+export * from './telemetry/telemetry.module';
+export * from './telemetry/interceptors/trace-context.interceptor';
+export * from './telemetry/filters/trace-exception.filter';
+

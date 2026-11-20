@@ -8,6 +8,7 @@ import {
   parseRateLimitProfiles,
   RedisCacheModule,
   SHARED_ENTITIES,
+  TelemetryModule,
   UserActionLog,
 } from '@jt-workspace/nest-lib';
 import { AuthApiModule } from '../auth/auth-api.module';
@@ -42,6 +43,9 @@ import { AppService } from './app.service';
     AuditLogModule.forRoot({
       appName: 'ikagi-api',
       isGlobal: true,
+    }),
+    TelemetryModule.forRoot({
+      serviceName: process.env.OTEL_SERVICE_NAME || 'ikagi-api',
     }),
     RedisCacheModule.forRootAsync({
       imports: [ConfigModule],

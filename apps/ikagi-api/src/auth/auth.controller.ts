@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards, Version } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -35,8 +35,9 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly auditLogService: AuditLogService,
-  ) {}
+  ) { }
 
+  @Version('1')
   @Post('register')
   @ApiOperation({
     summary: 'Register a local user',
@@ -62,6 +63,7 @@ export class AuthController {
     return result;
   }
 
+  @Version('1')
   @Post('login')
   @ApiOperation({
     summary: 'Login with email/username and password',
@@ -90,6 +92,7 @@ export class AuthController {
     return result;
   }
 
+  @Version('1')
   @UseGuards(GoogleAuthGuard)
   @Get('google')
   @ApiOperation({
@@ -101,6 +104,7 @@ export class AuthController {
     return;
   }
 
+  @Version('1')
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   @ApiOperation({
@@ -125,6 +129,7 @@ export class AuthController {
     return result;
   }
 
+  @Version('1')
   @UseGuards(FacebookAuthGuard)
   @Get('facebook')
   @ApiOperation({
@@ -136,6 +141,7 @@ export class AuthController {
     return;
   }
 
+  @Version('1')
   @UseGuards(FacebookAuthGuard)
   @Get('facebook/callback')
   @ApiOperation({
@@ -160,6 +166,7 @@ export class AuthController {
     return result;
   }
 
+  @Version('1')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('logout')
@@ -182,6 +189,7 @@ export class AuthController {
     return { success: true, message: 'Logged out successfully' };
   }
 
+  @Version('1')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
@@ -218,6 +226,7 @@ export class AuthController {
     return result;
   }
 
+  @Version('1')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('me')

@@ -123,6 +123,9 @@ function main() {
       runDocker(['rm', '-f', containerName], { ignoreFailure: true });
       const dbHost = process.env.DB_HOST ?? 'host.docker.internal';
       const redisHost = process.env.REDIS_HOST ?? 'host.docker.internal';
+      const otelEndpoint =
+        process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT ??
+        'http://host.docker.internal:4318/v1/traces';
       runDocker([
         'run',
         '-d',
@@ -137,6 +140,8 @@ function main() {
         `DB_HOST=${dbHost}`,
         '-e',
         `REDIS_HOST=${redisHost}`,
+        '-e',
+        `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=${otelEndpoint}`,
         ...extraFlags,
         imageName,
       ]);
