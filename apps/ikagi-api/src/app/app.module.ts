@@ -5,6 +5,7 @@ import {
   AuditLogModule,
   AuthModule,
   DynamicRateLimitModule,
+  OrgNestLibModule,
   parseRateLimitProfiles,
   RedisCacheModule,
   SHARED_ENTITIES,
@@ -90,8 +91,9 @@ import { AppService } from './app.service';
     }),
     AuthModule.forRootAsync(),
     AuthApiModule,
+    OrgNestLibModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

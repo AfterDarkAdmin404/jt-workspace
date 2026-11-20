@@ -1,16 +1,37 @@
-import { DynamicModule, Global, Module, type Provider } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import {
+  DynamicModule,
+  Global,
+  Inject,
+  type MiddlewareConsumer,
+  Module,
+  type NestModule,
+  Optional,
+  type Provider,
+} from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { TraceExceptionFilter } from './filters/trace-exception.filter';
-import { TraceContextInterceptor } from './interceptors/trace-context.interceptor';
 import {
   TELEMETRY_OPTIONS,
   type TelemetryModuleOptions,
 } from './interfaces/telemetry-options.interface';
+import { TraceContextMiddleware } from './middleware/trace-context.middleware';
 import { TelemetryService } from './telemetry.service';
 
 @Global()
 @Module({})
-export class TelemetryModule {
+export class TelemetryModule implements NestModule {
+  constructor(
+    @Optional()
+    @Inject(TELEMETRY_OPTIONS)
+    private readonly options?: TelemetryModuleOptions,
+  ) {}
+
+  configure(consumer: MiddlewareConsumer): void {
+    if (this.options?.enableGlobalTraceHeader !== false) {
+      consumer.apply(TraceContextMiddleware).forRoutes('{*path}');
+    }
+  }
+
   static forRoot(options: TelemetryModuleOptions): DynamicModule {
     const providers: Provider[] = [
       {
@@ -19,13 +40,6 @@ export class TelemetryModule {
       },
       TelemetryService,
     ];
-
-    if (options.enableGlobalTraceHeader !== false) {
-      providers.push({
-        provide: APP_INTERCEPTOR,
-        useClass: TraceContextInterceptor,
-      });
-    }
 
     if (options.enableGlobalExceptionFilter !== false) {
       providers.push({

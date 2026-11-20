@@ -23,6 +23,7 @@ import {
   UserActionType,
   UserProfileResponseDto,
 } from '@jt-workspace/nest-lib';
+import { Idempotent } from '@nestjs/idempotency';
 
 interface AuthenticatedRequest extends Request {
   user: User;
@@ -229,6 +230,7 @@ export class AuthController {
   @Version('1')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @Idempotent({ required: true })
   @Get('me')
   @ApiOperation({
     summary: 'Get authenticated user profile',
