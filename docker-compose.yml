@@ -40,6 +40,19 @@ services:
     networks:
       - ikag-network
 
+  jaeger:
+    image: jaegertracing/jaeger:2.23.0
+    container_name: jt-jaeger
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"
+      - "${JAEGER_OTLP_HTTP_PORT:-4318}:4318"
+      - "${JAEGER_OTLP_GRPC_PORT:-4317}:4317"
+    networks:
+      - ikag-network
+
 volumes:
   postgres_data:
   redis_data:
