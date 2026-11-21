@@ -49,3 +49,8 @@ export * from './telemetry/interceptors/trace-context.interceptor';
 export * from './telemetry/middleware/trace-context.middleware';
 export * from './telemetry/filters/trace-exception.filter';
 
+export * from './health/health.module';
+export * from './health/health.controller';
+export * from './health/indicators/redis.health';
+export * from './health/interfaces/health-options.interface';
+

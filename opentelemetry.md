@@ -1,20 +1,20 @@
 # OpenTelemetry Observability Guide
 
-This workspace provides a reusable OpenTelemetry tracing setup in `@jt-workspace/nest-lib` (`libs/nest-lib/src/telemetry/`) and a local Jaeger backend (`jt-jaeger`) in [`docker-compose.yml`](../docker-compose.yml).
+This workspace provides a reusable OpenTelemetry tracing setup in `@jt-workspace/nest-lib` (`libs/nest-lib/src/telemetry/`) and a local Jaeger backend (`jt-jaeger`) in [`docker-compose.yml`](./docker-compose.yml).
 
 ---
 
 ## Architecture Overview
 
 1. **Pre-Bootstrap Instrumentation (`@jt-workspace/nest-lib/telemetry`)**
-   - `initTelemetry(options)` in [`libs/nest-lib/src/telemetry/tracing.ts`](../libs/nest-lib/src/telemetry/tracing.ts) initializes the OpenTelemetry `NodeSDK` with OTLP/HTTP export (`@opentelemetry/exporter-trace-otlp-http`) before NestJS, Express, TypeORM, `pg`, or `redis` are imported.
-   - Imported via the `@jt-workspace/nest-lib/telemetry` subpath export (defined in [`libs/nest-lib/package.json`](../libs/nest-lib/package.json)) so initializing the SDK does not eagerly load NestJS/TypeORM/Redis from the main barrel.
+   - `initTelemetry(options)` in [`libs/nest-lib/src/telemetry/tracing.ts`](./libs/nest-lib/src/telemetry/tracing.ts) initializes the OpenTelemetry `NodeSDK` with OTLP/HTTP export (`@opentelemetry/exporter-trace-otlp-http`) before NestJS, Express, TypeORM, `pg`, or `redis` are imported.
+   - Imported via the `@jt-workspace/nest-lib/telemetry` subpath export (defined in [`libs/nest-lib/package.json`](./libs/nest-lib/package.json)) so initializing the SDK does not eagerly load NestJS/TypeORM/Redis from the main barrel.
 2. **Global NestJS Module (`TelemetryModule`)**
-   - [`TelemetryModule.forRoot()`](../libs/nest-lib/src/telemetry/telemetry.module.ts) is `@Global()` and exports [`TelemetryService`](../libs/nest-lib/src/telemetry/telemetry.service.ts).
-   - Mounts [`TraceContextMiddleware`](../libs/nest-lib/src/telemetry/middleware/trace-context.middleware.ts) on `'{*path}'` (running before guards and `IdempotencyInterceptor`) to attach the `X-Trace-Id` response header on traced requests.
-   - Registers [`TraceExceptionFilter`](../libs/nest-lib/src/telemetry/filters/trace-exception.filter.ts) as a global `APP_FILTER` to include `X-Trace-Id` headers and `traceId` in HTTP error JSON responses, and log unhandled `500` errors with `[traceId=...]`.
+   - [`TelemetryModule.forRoot()`](./libs/nest-lib/src/telemetry/telemetry.module.ts) is `@Global()` and exports [`TelemetryService`](./libs/nest-lib/src/telemetry/telemetry.service.ts).
+   - Mounts [`TraceContextMiddleware`](./libs/nest-lib/src/telemetry/middleware/trace-context.middleware.ts) on `'{*path}'` (running before guards and `IdempotencyInterceptor`) to attach the `X-Trace-Id` response header on traced requests.
+   - Registers [`TraceExceptionFilter`](./libs/nest-lib/src/telemetry/filters/trace-exception.filter.ts) as a global `APP_FILTER` to include `X-Trace-Id` headers and `traceId` in HTTP error JSON responses, and log unhandled `500` errors with `[traceId=...]`.
 3. **Local Tracing Backend (`jt-jaeger`)**
-   - Runs `jaegertracing/jaeger:2.23.0` on `ikag-network` in [`docker-compose.yml`](../docker-compose.yml).
+   - Runs `jaegertracing/jaeger:2.23.0` on `ikag-network` in [`docker-compose.yml`](./docker-compose.yml).
    - Exposes the Jaeger Web UI on `16686`, OTLP/HTTP on `4318`, and OTLP/gRPC on `4317`.
 
 ---
@@ -27,7 +27,7 @@ This workspace provides a reusable OpenTelemetry tracing setup in `@jt-workspace
 | **Database** | Enabled | `@opentelemetry/instrumentation-pg` (PostgreSQL queries & pool connections) |
 | **Cache / Rate Limit** | Enabled | `@opentelemetry/instrumentation-redis` / `ioredis` |
 | **Low-level Noise** | Disabled | `@opentelemetry/instrumentation-fs`, `dns`, and `net` are disabled |
-| **Healthchecks** | Ignored | Exact paths `['/', '/health']` (configurable via `ignoreIncomingRequestPaths`) |
+| **Healthchecks** | Ignored | Exact paths `['/', '/health', '/health/live', '/health/ready']` (configurable via `ignoreIncomingRequestPaths`) |
 | **Swagger UI & JSON** | Ignored | Prefix `'/' + (process.env.SWAGGER_DOCS_PATH \|\| 'docs')` excludes `/docs`, `/docs/*`, and `/docs-*` |
 
 ---
@@ -50,7 +50,7 @@ This workspace provides a reusable OpenTelemetry tracing setup in `@jt-workspace
 | Execution Mode | `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Notes |
 | :--- | :--- | :--- |
 | **Host PC (`yarn nx serve @org/ikagi-api`)** | `http://localhost:4318/v1/traces` | Default in `apps/ikagi-api/.env` and `.env.dev` |
-| **Docker Runner (`yarn docker:run ikagi-api`)** | `http://host.docker.internal:4318/v1/traces` | Injected automatically by [`tools/scripts/docker-runner.mjs`](../tools/scripts/docker-runner.mjs) |
+| **Docker Runner (`yarn docker:run ikagi-api`)** | `http://host.docker.internal:4318/v1/traces` | Injected automatically by [`tools/scripts/docker-runner.mjs`](./tools/scripts/docker-runner.mjs) |
 | **Shared Compose Network (`ikag-network`)** | `http://jaeger:4318/v1/traces` | Uses the `jaeger` Compose service name |
 
 ### Jaeger Port Overrides (Root `.env`)
