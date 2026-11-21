@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "preinstall": "node tools/scripts/check-gh-pat.js",
     "migration:create": "node tools/scripts/typeorm-migration.mjs create",
     "migration:generate": "node tools/scripts/typeorm-migration.mjs generate",
     "migration:run": "node tools/scripts/typeorm-migration.mjs run",

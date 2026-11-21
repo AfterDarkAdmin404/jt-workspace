@@ -7,12 +7,15 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++ \
   && corepack enable
 
-# Copy workspace manifests and lockfile for Yarn 4 install (NestJS API + nest-lib only)
-COPY package.json yarn.lock .yarnrc.yml nx.json tsconfig*.json ./
+# Copy workspace manifests, lockfile, and registry auth config for Yarn 4 install (NestJS API + nest-lib only)
+COPY package.json yarn.lock .yarnrc.yml .npmrc nx.json tsconfig*.json ./
+COPY .yarn/plugins/check-gh-pat.cjs .yarn/plugins/check-gh-pat.cjs
+COPY tools/scripts/check-gh-pat.js tools/scripts/check-gh-pat.js
 COPY libs/nest-lib/package.json libs/nest-lib/package.json
 COPY apps/ikagi-api/package.json apps/ikagi-api/package.json
 
-RUN yarn install
+RUN --mount=type=secret,id=gh_pat \
+  GH_PAT="$(cat /run/secrets/gh_pat)" yarn install --immutable
 
 # Copy shared NestJS library (auth, audit, cache, rate-limit, entities/migrations) and ikagi-api
 COPY libs/nest-lib ./libs/nest-lib
@@ -33,7 +36,6 @@ COPY --from=builder /app/libs/nest-lib/package.json ./libs/nest-lib/package.json
 COPY --from=builder /app/libs/nest-lib/dist ./libs/nest-lib/dist
 COPY --from=builder /app/apps/ikagi-api/package.json ./apps/ikagi-api/package.json
 COPY --from=builder /app/apps/ikagi-api/dist ./apps/ikagi-api/dist
-COPY --from=builder /app/apps/ikagi-api/.env.dev ./apps/ikagi-api/.env.dev
 
 EXPOSE 3000
 

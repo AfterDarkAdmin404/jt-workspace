@@ -3,5 +3,6 @@ node_modules
 .git
 .nx
 .next
-**/.env
-!**/.env.dev
+.npmrc.local
+**/.env*
+!**/.env*.example

@@ -26,7 +26,9 @@ Nx monorepo managed with **Yarn 4 (Berry)** containing:
 
 ## Getting Started
 
-### 1. Install Dependencies
+### 1. Configure GitHub PAT & Install Dependencies
+
+Configure `GH_PAT` (required for `npm`/`yarn` installs and Docker builds — see [npm-auth-setup.md](npm-auth-setup.md)), then install dependencies:
 
 ```sh
 yarn install
@@ -103,7 +105,7 @@ yarn docker:stop ikagi-api
 ### CI/CD & GCP Release
 
 - Main CI: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
-- `ikagi-api` Release (Dry-Run / GCP Cloud Run): [`.github/workflows/ikagi-api-release.yml`](.github/workflows/ikagi-api-release.yml) — see [docs/ci-cd-gcp.md](docs/ci-cd-gcp.md) for activation variables and secrets.
+- `ikagi-api` Deployment (Staging / Production Cloud Run): [`.github/workflows/ikagi-api-deploy.yml`](.github/workflows/ikagi-api-deploy.yml) (uses [`.github/workflows/_reusable-api-gcp-deploy.yml`](.github/workflows/_reusable-api-gcp-deploy.yml)) — see [ci-cd-gcp.md](ci-cd-gcp.md) for environment setup, activation variables, and secrets.
 
 ---
 

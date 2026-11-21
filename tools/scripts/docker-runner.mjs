@@ -13,6 +13,9 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import checkGhPat from './check-gh-pat.js';
+
+const { assertGhPat } = checkGhPat;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,10 +62,11 @@ function parseArgs(argv) {
   return { command, appName, extraFlags };
 }
 
-function runDocker(args, { ignoreFailure = false } = {}) {
+function runDocker(args, { ignoreFailure = false, env } = {}) {
   const result = spawnSync('docker', args, {
     cwd: workspaceRoot,
     stdio: 'inherit',
+    env: env ? { ...process.env, ...env } : process.env,
   });
   if (result.error) {
     console.error(`Failed to execute docker: ${result.error.message}`);
@@ -107,17 +111,28 @@ function main() {
         );
         process.exit(1);
       }
-      runDocker([
-        'build',
-        '--build-arg',
-        `APP_NAME=${appName}`,
-        '-t',
-        imageName,
-        '-f',
-        dockerfilePath,
-        ...extraFlags,
-        '.',
-      ]);
+      try {
+        assertGhPat();
+      } catch (err) {
+        console.error(err.message);
+        process.exit(1);
+      }
+      runDocker(
+        [
+          'build',
+          '--secret',
+          'id=gh_pat,env=GH_PAT',
+          '--build-arg',
+          `APP_NAME=${appName}`,
+          '-t',
+          imageName,
+          '-f',
+          dockerfilePath,
+          ...extraFlags,
+          '.',
+        ],
+        { env: { DOCKER_BUILDKIT: '1' } },
+      );
       break;
     case 'run': {
       runDocker(['rm', '-f', containerName], { ignoreFailure: true });

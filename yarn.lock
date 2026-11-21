@@ -3010,6 +3010,7 @@ __metadata:
     "@nestjs/jwt": "npm:^11.0.0"
     "@nestjs/passport": "npm:^11.0.0"
     "@nestjs/swagger": "npm:^11.0.0"
+    "@nestjs/terminus": "npm:^12.2.0"
     "@nestjs/throttler": "npm:^6.4.0"
     "@nestjs/typeorm": "npm:^11.0.0"
     "@opentelemetry/api": "npm:^1.10.0"
