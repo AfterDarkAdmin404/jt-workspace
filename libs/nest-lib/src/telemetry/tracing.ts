@@ -49,7 +49,12 @@ export function initTelemetry(options: TelemetryOptions): NodeSDK | null {
   const swaggerDocsPrefix = normalizePathPrefix(
     process.env.SWAGGER_DOCS_PATH || 'docs',
   );
-  const ignorePaths = options.ignoreIncomingRequestPaths ?? ['/', '/health'];
+  const ignorePaths = options.ignoreIncomingRequestPaths ?? [
+    '/',
+    '/health',
+    '/health/live',
+    '/health/ready',
+  ];
   const ignorePathPrefixes = (
     options.ignoreIncomingRequestPathPrefixes ?? [swaggerDocsPrefix]
   ).map(normalizePathPrefix);

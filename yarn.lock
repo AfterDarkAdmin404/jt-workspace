@@ -3500,6 +3500,61 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/terminus@npm:^12.2.0":
+  version: 12.2.0
+  resolution: "@nestjs/terminus@npm:12.2.0"
+  peerDependencies:
+    "@grpc/grpc-js": "*"
+    "@grpc/proto-loader": "*"
+    "@mikro-orm/core": "*"
+    "@mikro-orm/nestjs": "*"
+    "@nestjs/axios": ^4.0.0 || ^12.0.0
+    "@nestjs/common": ^11.0.0 || ^12.0.0
+    "@nestjs/core": ^11.0.0 || ^12.0.0
+    "@nestjs/microservices": ^11.0.0 || ^12.0.0
+    "@nestjs/mongoose": ^11.0.0 || ^12.0.0
+    "@nestjs/sequelize": ^11.0.0 || ^12.0.0
+    "@nestjs/swagger": ^11.0.0 || ^12.0.0
+    "@nestjs/typeorm": ^11.0.0 || ^12.0.0
+    "@prisma/client": "*"
+    mongoose: "*"
+    reflect-metadata: ^0.1.12 || ^0.2.0
+    rxjs: ^7.1.0
+    sequelize: "*"
+    typeorm: "*"
+  peerDependenciesMeta:
+    "@grpc/grpc-js":
+      optional: true
+    "@grpc/proto-loader":
+      optional: true
+    "@mikro-orm/core":
+      optional: true
+    "@mikro-orm/nestjs":
+      optional: true
+    "@nestjs/axios":
+      optional: true
+    "@nestjs/microservices":
+      optional: true
+    "@nestjs/mongoose":
+      optional: true
+    "@nestjs/sequelize":
+      optional: true
+    "@nestjs/swagger":
+      optional: true
+    "@nestjs/typeorm":
+      optional: true
+    "@prisma/client":
+      optional: true
+    mongoose:
+      optional: true
+    sequelize:
+      optional: true
+    typeorm:
+      optional: true
+  checksum: 10c0/8a4a65e071a42b7a4839e5c391ac696e853300db6d3475f863f726de4e75a66f03226ef9956dd850fa27b13e15121e8752b0b7dcf35affebb125535208e3ed12
+  languageName: node
+  linkType: hard
+
 "@nestjs/testing@npm:^11.0.0":
   version: 11.2.10
   resolution: "@nestjs/testing@npm:11.2.10"
@@ -5459,6 +5514,7 @@ __metadata:
     "@nestjs/platform-express": "npm:^11.0.0"
     "@nestjs/schematics": "npm:^11.0.0"
     "@nestjs/swagger": "npm:^11.0.0"
+    "@nestjs/terminus": "npm:^12.2.0"
     "@nestjs/testing": "npm:^11.0.0"
     "@nestjs/throttler": "npm:^6.4.0"
     "@nestjs/typeorm": "npm:^11.0.0"

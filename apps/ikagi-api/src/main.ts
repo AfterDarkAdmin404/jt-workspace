@@ -16,7 +16,12 @@ async function bootstrap() {
 
   app.set('trust proxy', 1);
   app.setGlobalPrefix(globalPrefix, {
-    exclude: [{ path: '/', method: RequestMethod.GET }],
+    exclude: [
+      { path: '/', method: RequestMethod.GET },
+      { path: 'health', method: RequestMethod.GET },
+      { path: 'health/live', method: RequestMethod.GET },
+      { path: 'health/ready', method: RequestMethod.GET },
+    ],
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -41,6 +46,7 @@ async function bootstrap() {
   });
 
   setupSwagger(app, configService, port);
+  app.enableShutdownHooks();
 
   await app.listen(port);
 

@@ -17,9 +17,9 @@ Nx monorepo managed with **Yarn 4 (Berry)** containing:
    ```sh
    corepack enable
    ```
-2. **PostgreSQL 16 & Redis 7 (via Docker Compose):**
-   - Managed via [`docker-compose.yml`](./docker-compose.yml) (`jt-postgres` on `localhost:5433`, `db_ikag`, `postgres`/`root`, and `jt-redis` on `localhost:6379`).
-   - See [docs/docker-infrastructure.md](./docs/docker-infrastructure.md) for lifecycle scripts (`infra:down`, `infra:logs`, `infra:reset`), `.env` host replacement rules, and troubleshooting.
+2. **PostgreSQL 16, Redis 7 & Jaeger 2 (via Docker Compose):**
+   - Managed via [`docker-compose.yml`](./docker-compose.yml) (`jt-postgres` on `localhost:5433`, `db_ikag`, `postgres`/`root`, `jt-redis` on `localhost:6379`, and `jt-jaeger` UI on `localhost:16686`).
+   - See [docker-infrastructure.md](./docker-infrastructure.md) for lifecycle scripts (`infra:down`, `infra:logs`, `infra:reset`), `.env` host replacement rules, and troubleshooting.
 3. **Docker** _(required for `infra:up` and containerized builds/runs)_
 
 ---
@@ -75,7 +75,8 @@ yarn nx serve @org/ikagi-api
 
 Once running on `http://localhost:3000`:
 
-- **Health Check:** `GET http://localhost:3000/`
+- **Health Checks:** `GET /` and `GET /health/live` (liveness), `GET /health` and `GET /health/ready` (readiness) — see [healthcheck.md](./healthcheck.md)
+- **Observability (OpenTelemetry & Jaeger):** Pre-bootstrap OTLP/HTTP tracing (`http://localhost:16686`) and global `X-Trace-Id` / `traceId` propagation — see [opentelemetry.md](./opentelemetry.md)
 - **Full API Swagger UI:** `http://localhost:3000/docs` (OpenAPI JSON: `http://localhost:3000/docs-json`)
 - **Per-Service Swagger Docs (auto-discovered):** `/docs/<service>` and `/docs/<service>-json` (for example, `http://localhost:3000/docs/auth` and `http://localhost:3000/docs/auth-json`). Any new feature module with a routed controller is automatically exposed under `/docs/<service>` via `setupSwagger` in `@jt-workspace/nest-lib` (or customized with `@SwaggerService({ name, title, description })`).
 - **Auth Endpoints:** `/api/auth/register`, `/api/auth/login`, `/api/auth/google`, `/api/auth/facebook`, `/api/auth/logout`, `/api/auth/change-password`, `/api/auth/me`
