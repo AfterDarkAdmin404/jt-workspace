@@ -46,6 +46,8 @@ jobs:
     permissions:
       contents: read
       packages: read
+    env:
+      GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -62,8 +64,6 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        env:
-          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
         run: yarn install --immutable
 
       - name: Build shared library and target API
