@@ -1,0 +1,187 @@
+name: Reusable Yarn API GCP Deploy
+
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        description: 'API directory name under apps/ (e.g., ikagi-api)'
+        type: string
+        required: true
+      dockerfile_path:
+        description: 'Path to the app Dockerfile relative to workspace root'
+        type: string
+        required: true
+      nx_project:
+        description: 'Nx project name (defaults to @org/<app_name>)'
+        type: string
+        required: false
+        default: ''
+      node_version:
+        description: 'Node.js version'
+        type: string
+        required: false
+        default: '24'
+      container_port:
+        description: 'Container listening port for Cloud Run'
+        type: number
+        required: false
+        default: 3000
+      allow_unauthenticated:
+        description: 'Allow unauthenticated invocations on Cloud Run'
+        type: boolean
+        required: false
+        default: true
+    secrets:
+      GH_PAT:
+        required: false
+      GCP_WORKLOAD_IDENTITY_PROVIDER:
+        required: false
+      GCP_SERVICE_ACCOUNT:
+        required: false
+
+jobs:
+  build-and-verify:
+    name: Build & Verify (${{ inputs.app_name }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: 'yarn'
+
+      - name: Install dependencies
+        env:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        run: yarn install --immutable
+
+      - name: Build shared library and target API
+        env:
+          NX_PROJECT: ${{ inputs.nx_project || format('@org/{0}', inputs.app_name) }}
+        run: |
+          yarn nx build @jt-workspace/nest-lib
+          yarn nx build "${NX_PROJECT}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Verify Docker image build from workspace root
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ inputs.dockerfile_path }}
+          load: true
+          push: false
+          tags: ${{ inputs.app_name }}:${{ github.sha }}
+          secrets: |
+            gh_pat=${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          cache-from: type=gha,scope=${{ inputs.app_name }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.app_name }}
+
+  deploy-gcp:
+    name: Deploy to GCP Cloud Run (${{ inputs.app_name }})
+    needs: build-and-verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    environment: ${{ github.ref_name }}-gcp
+    env:
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'placeholder-gcp-project' }}
+      GCP_REGION: ${{ vars.GCP_REGION || 'asia-southeast1' }}
+      GCP_AR_REPO: ${{ vars.GCP_AR_REPO || 'api-docker-repo' }}
+      GCP_SERVICE_NAME: ${{ vars.GCP_CLOUD_RUN_SERVICE || format('{0}-{1}', inputs.app_name, github.ref_name) }}
+    steps:
+      - name: Skip GCP deployment (dry-run mode)
+        if: vars.GCP_DEPLOY_ENABLED != 'true'
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          CONTAINER_PORT: ${{ inputs.container_port }}
+          ALLOW_UNAUTHENTICATED: ${{ inputs.allow_unauthenticated }}
+          TARGET_ENV: ${{ github.ref_name }}-gcp
+          TARGET_REF: ${{ github.ref_name }}
+        run: |
+          IMAGE_SHA_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GCP_AR_REPO}/${APP_NAME}:${GITHUB_SHA}"
+          IMAGE_LATEST_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GCP_AR_REPO}/${APP_NAME}:${TARGET_REF}-latest"
+          AUTH_FLAG="--no-allow-unauthenticated"
+          if [ "${ALLOW_UNAUTHENTICATED}" = "true" ]; then
+            AUTH_FLAG="--allow-unauthenticated"
+          fi
+          echo "::notice::GCP authentication and deployment skipped because GCP_DEPLOY_ENABLED is not 'true'."
+          echo "Target GitHub Environment : ${TARGET_ENV}"
+          echo "Resolved Image URI (SHA)  : ${IMAGE_SHA_URI}"
+          echo "Resolved Image URI (Tag)  : ${IMAGE_LATEST_URI}"
+          echo "Cloud Run Service Name    : ${GCP_SERVICE_NAME}"
+          echo "Container Port            : ${CONTAINER_PORT}"
+          echo "Command preview:"
+          echo "  gcloud run deploy \"${GCP_SERVICE_NAME}\" --image \"${IMAGE_SHA_URI}\" --region \"${GCP_REGION}\" --platform managed --port \"${CONTAINER_PORT}\" ${AUTH_FLAG}"
+          exit 0
+
+      - name: Checkout repository
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Google Cloud CLI
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        run: gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
+
+      - name: Set up Docker Buildx
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image to Artifact Registry
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ inputs.dockerfile_path }}
+          push: true
+          tags: |
+            ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_AR_REPO }}/${{ inputs.app_name }}:${{ github.sha }}
+            ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GCP_AR_REPO }}/${{ inputs.app_name }}:${{ github.ref_name }}-latest
+          secrets: |
+            gh_pat=${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          cache-from: type=gha,scope=${{ inputs.app_name }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.app_name }}
+
+      - name: Deploy to Cloud Run
+        if: vars.GCP_DEPLOY_ENABLED == 'true'
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          CONTAINER_PORT: ${{ inputs.container_port }}
+          ALLOW_UNAUTHENTICATED: ${{ inputs.allow_unauthenticated }}
+        run: |
+          IMAGE_SHA_URI="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${GCP_AR_REPO}/${APP_NAME}:${GITHUB_SHA}"
+          AUTH_FLAG="--no-allow-unauthenticated"
+          if [ "${ALLOW_UNAUTHENTICATED}" = "true" ]; then
+            AUTH_FLAG="--allow-unauthenticated"
+          fi
+          gcloud run deploy "${GCP_SERVICE_NAME}" \
+            --image "${IMAGE_SHA_URI}" \
+            --region "${GCP_REGION}" \
+            --platform managed \
+            --port "${CONTAINER_PORT}" \
+            "${AUTH_FLAG}"

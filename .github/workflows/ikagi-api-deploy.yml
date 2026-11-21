@@ -1,0 +1,31 @@
+name: ikagi-api-deploy
+
+on:
+  push:
+    branches:
+      - staging
+      - production
+    paths:
+      - 'apps/ikagi-api/**'
+      - 'libs/nest-lib/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.yarnrc.yml'
+      - 'nx.json'
+      - 'tsconfig*.json'
+      - '.dockerignore'
+      - '.github/workflows/ikagi-api-deploy.yml'
+      - '.github/workflows/_reusable-api-gcp-deploy.yml'
+
+concurrency:
+  group: ikagi-api-deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/_reusable-api-gcp-deploy.yml
+    with:
+      app_name: ikagi-api
+      nx_project: '@org/ikagi-api'
+      dockerfile_path: apps/ikagi-api/Dockerfile
+    secrets: inherit

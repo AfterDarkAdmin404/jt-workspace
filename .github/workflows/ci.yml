@@ -9,6 +9,7 @@ on:
 permissions:
   actions: read
   contents: read
+  packages: read
 
 jobs:
   main:
@@ -31,7 +32,10 @@ jobs:
           node-version: 24
           cache: 'yarn'
 
-      - run: yarn install --immutable
+      - name: Install dependencies
+        env:
+          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+        run: yarn install --immutable
 
       # Prepend any command with "nx record --" to record its logs to Nx Cloud
       - run: yarn nx record -- yarn nx format:check --all
