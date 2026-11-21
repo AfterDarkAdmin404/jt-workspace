@@ -23,6 +23,10 @@ concurrency:
 
 jobs:
   deploy:
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     uses: ./.github/workflows/_reusable-api-gcp-deploy.yml
     with:
       app_name: ikagi-api

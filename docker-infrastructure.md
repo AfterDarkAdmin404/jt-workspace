@@ -33,6 +33,9 @@ This workspace provisions **PostgreSQL 16** (`jt-postgres`), **Redis 7** (`jt-re
 | `yarn infra:down` | `docker compose down` | Stop and remove containers (volumes preserved) |
 | `yarn infra:logs` | `docker compose logs -f` | Tail container logs |
 | `yarn infra:reset` | `docker compose down -v` | Stop containers and **delete** `postgres_data` / `redis_data` volumes |
+| `yarn lint:workflows` | `docker compose run --rm actionlint` | Run `actionlint` (with `shellcheck` & `pyflakes`) on `.github/workflows/` |
+
+> **Note:** `actionlint` uses `profiles: ["lint"]` in [`docker-compose.yml`](./docker-compose.yml), so `yarn infra:up` (`docker compose up -d`) will not start it alongside Postgres, Redis, and Jaeger.
 
 ---
 
