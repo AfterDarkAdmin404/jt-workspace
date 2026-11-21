@@ -18,6 +18,7 @@
     "infra:logs": "docker compose logs -f",
     "infra:reset": "docker compose down -v",
     "infra:ps": "docker compose ps",
+    "lint:workflows": "docker compose run --rm actionlint",
     "prepare": "husky"
   },
   "private": true,

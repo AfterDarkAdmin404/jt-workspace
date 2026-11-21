@@ -53,6 +53,15 @@ services:
     networks:
       - ikag-network
 
+  actionlint:
+    image: rhysd/actionlint:latest
+    container_name: jt-actionlint
+    profiles: ["lint"]
+    volumes:
+      - .:/repo:ro
+    working_dir: /repo
+    command: ["-color", "-verbose"]
+
 volumes:
   postgres_data:
   redis_data:
