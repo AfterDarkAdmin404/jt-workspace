@@ -13,8 +13,14 @@ export function ProtectedRoute({
   children,
   requiredRoles,
 }: ProtectedRouteProps) {
-  const { user, isAuthenticated, isLoading, sessionError, retrySession, logout } =
-    useAuth();
+  const {
+    user,
+    isAuthenticated,
+    isLoading,
+    sessionError,
+    retrySession,
+    logout,
+  } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -78,7 +84,9 @@ export function ProtectedRoute({
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-50 px-4">
         <div className="rounded-xl border border-red-200 bg-white p-6 text-center shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Access Denied</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            Access Denied
+          </h2>
           <p className="mt-1 text-sm text-slate-600">
             You do not have permission to view this page.
           </p>

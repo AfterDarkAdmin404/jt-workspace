@@ -19,8 +19,8 @@ This workspace enforces GitHub Personal Access Token (`GH_PAT`) authentication a
 
 1. Open **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)** (or generate a fine-grained token with package read access if supported by your org).
 2. Select scopes:
-   - `read:packages` *(minimum required for installing packages and running local/Docker builds)*
-   - `write:packages` *(add only if you publish `@jt-workspace/*` packages to GitHub Packages)*
+   - `read:packages` _(minimum required for installing packages and running local/Docker builds)_
+   - `write:packages` _(add only if you publish `@jt-workspace/*` packages to GitHub Packages)_
 3. **SAML SSO Organizations:** If your GitHub organization enforces SAML SSO, click **Configure SSO → Authorize** next to the token after creating it.
 
 ---

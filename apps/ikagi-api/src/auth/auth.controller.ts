@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards, Version } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  UseGuards,
+  Version,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -36,7 +44,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly auditLogService: AuditLogService,
-  ) { }
+  ) {}
 
   @Version('1')
   @Post('register')

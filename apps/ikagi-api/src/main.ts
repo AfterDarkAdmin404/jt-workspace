@@ -1,6 +1,11 @@
 import './instrumentation';
 import { setupSwagger } from '@jt-workspace/nest-lib';
-import { Logger, RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  Logger,
+  RequestMethod,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -63,7 +68,9 @@ async function bootstrap() {
     }
   }
 
-  Logger.log(`Application is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(
+    `Application is running on: http://localhost:${port}/${globalPrefix}`,
+  );
 }
 
 bootstrap();

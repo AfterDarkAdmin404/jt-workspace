@@ -33,8 +33,10 @@ export interface HealthModuleOptions {
   customIndicators?: HealthIndicatorFunction[];
 }
 
-export interface HealthModuleAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
+export interface HealthModuleAsyncOptions extends Pick<
+  ModuleMetadata,
+  'imports'
+> {
   inject?: any[];
   useFactory: (
     ...args: any[]

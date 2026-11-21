@@ -4,3 +4,6 @@
 /.nx/cache
 /.nx/workspace-data
 .nx/self-healing
+apps/ikagi-web/next-env.d.ts
+apps/ikagi-web/src/api/generated/
+apps/ikagi-web/src/api/swagger/

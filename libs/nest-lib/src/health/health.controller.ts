@@ -50,7 +50,10 @@ export class HealthController {
       'Runs lightweight in-process checks (memory heap) without hitting external databases or caches.',
   })
   @ApiResponse({ status: 200, description: 'Process is alive' })
-  @ApiResponse({ status: 503, description: 'Process is unhealthy or shutting down' })
+  @ApiResponse({
+    status: 503,
+    description: 'Process is unhealthy or shutting down',
+  })
   checkLiveness(): Promise<HealthCheckResult> {
     return this.runLiveness();
   }
@@ -63,7 +66,10 @@ export class HealthController {
       'Alias of GET / running lightweight in-process checks (memory heap).',
   })
   @ApiResponse({ status: 200, description: 'Process is alive' })
-  @ApiResponse({ status: 503, description: 'Process is unhealthy or shutting down' })
+  @ApiResponse({
+    status: 503,
+    description: 'Process is unhealthy or shutting down',
+  })
   checkLivenessAlias(): Promise<HealthCheckResult> {
     return this.runLiveness();
   }
@@ -75,10 +81,14 @@ export class HealthController {
     description:
       'Verifies PostgreSQL, Redis, configured external endpoints, and custom health indicators.',
   })
-  @ApiResponse({ status: 200, description: 'All readiness dependencies are up' })
+  @ApiResponse({
+    status: 200,
+    description: 'All readiness dependencies are up',
+  })
   @ApiResponse({
     status: 503,
-    description: 'One or more dependencies are down or application is shutting down',
+    description:
+      'One or more dependencies are down or application is shutting down',
   })
   checkReadiness(): Promise<HealthCheckResult> {
     return this.runReadiness();
@@ -91,10 +101,14 @@ export class HealthController {
     description:
       'Alias of GET /health verifying PostgreSQL, Redis, configured external endpoints, and custom health indicators.',
   })
-  @ApiResponse({ status: 200, description: 'All readiness dependencies are up' })
+  @ApiResponse({
+    status: 200,
+    description: 'All readiness dependencies are up',
+  })
   @ApiResponse({
     status: 503,
-    description: 'One or more dependencies are down or application is shutting down',
+    description:
+      'One or more dependencies are down or application is shutting down',
   })
   checkReadinessAlias(): Promise<HealthCheckResult> {
     return this.runReadiness();

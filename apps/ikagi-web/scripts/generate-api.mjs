@@ -109,7 +109,10 @@ async function fetchAndSaveSpec(url, serviceName, dryRun) {
   }
 
   const spec = await response.json();
-  if (!spec || (typeof spec.openapi !== 'string' && typeof spec.swagger !== 'string')) {
+  if (
+    !spec ||
+    (typeof spec.openapi !== 'string' && typeof spec.swagger !== 'string')
+  ) {
     throw new Error(
       `Invalid OpenAPI payload from ${url}: missing "openapi" or "swagger" key.`,
     );
@@ -118,8 +121,14 @@ async function fetchAndSaveSpec(url, serviceName, dryRun) {
   const specFilePath = path.join(SWAGGER_DIR, `${serviceName}.json`);
   if (!dryRun) {
     fs.mkdirSync(SWAGGER_DIR, { recursive: true });
-    fs.writeFileSync(specFilePath, `${JSON.stringify(spec, null, 2)}\n`, 'utf8');
-    console.log(`Saved OpenAPI spec to ${path.relative(APP_DIR, specFilePath)}`);
+    fs.writeFileSync(
+      specFilePath,
+      `${JSON.stringify(spec, null, 2)}\n`,
+      'utf8',
+    );
+    console.log(
+      `Saved OpenAPI spec to ${path.relative(APP_DIR, specFilePath)}`,
+    );
   } else {
     console.log(`[dry-run] Validated OpenAPI spec from ${url}`);
   }
@@ -144,7 +153,9 @@ function runCodegen(specPath, outputDir, dryRun) {
   }
 
   const require = createRequire(import.meta.url);
-  const pkgDir = path.dirname(require.resolve('@hey-api/openapi-ts/package.json'));
+  const pkgDir = path.dirname(
+    require.resolve('@hey-api/openapi-ts/package.json'),
+  );
   const openapiTsBin = path.join(pkgDir, 'bin', 'run.js');
 
   const cliArgs = [openapiTsBin, '-f', 'openapi-ts.config.ts'];
@@ -189,14 +200,20 @@ async function main() {
     if (args.url) {
       const serviceName = args.services[0] || inferServiceNameFromUrl(args.url);
       console.log(`Fetching OpenAPI spec from ${args.url}...`);
-      const savedSpec = await fetchAndSaveSpec(args.url, serviceName, args.dryRun);
+      const savedSpec = await fetchAndSaveSpec(
+        args.url,
+        serviceName,
+        args.dryRun,
+      );
       if (!args.dryRun) {
         specFiles.push(savedSpec);
       }
     } else {
       let servicesToFetch = args.services;
       if (servicesToFetch.length === 0) {
-        servicesToFetch = findLocalSpecs().map((p) => path.basename(p, '.json'));
+        servicesToFetch = findLocalSpecs().map((p) =>
+          path.basename(p, '.json'),
+        );
       }
       if (servicesToFetch.length === 0) {
         console.error(
@@ -208,7 +225,11 @@ async function main() {
       for (const serviceName of servicesToFetch) {
         const targetUrl = resolveServiceUrl(serviceName);
         console.log(`Fetching OpenAPI spec from ${targetUrl}...`);
-        const savedSpec = await fetchAndSaveSpec(targetUrl, serviceName, args.dryRun);
+        const savedSpec = await fetchAndSaveSpec(
+          targetUrl,
+          serviceName,
+          args.dryRun,
+        );
         if (!args.dryRun) {
           specFiles.push(savedSpec);
         }
@@ -227,7 +248,9 @@ async function main() {
   } else {
     specFiles = findLocalSpecs();
     if (specFiles.length === 0) {
-      console.log('No OpenAPI .json specs found in src/api/swagger. Nothing to generate.');
+      console.log(
+        'No OpenAPI .json specs found in src/api/swagger. Nothing to generate.',
+      );
       return;
     }
   }

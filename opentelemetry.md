@@ -21,14 +21,14 @@ This workspace provides a reusable OpenTelemetry tracing setup in `@jt-workspace
 
 ## What Is Traced (and Filtered)
 
-| Category | Status | Details |
-| :--- | :--- | :--- |
-| **HTTP & Routing** | Enabled | `@opentelemetry/instrumentation-http`, `express`, `router`, `nestjs-core` |
-| **Database** | Enabled | `@opentelemetry/instrumentation-pg` (PostgreSQL queries & pool connections) |
-| **Cache / Rate Limit** | Enabled | `@opentelemetry/instrumentation-redis` / `ioredis` |
-| **Low-level Noise** | Disabled | `@opentelemetry/instrumentation-fs`, `dns`, and `net` are disabled |
-| **Healthchecks** | Ignored | Exact paths `['/', '/health', '/health/live', '/health/ready']` (configurable via `ignoreIncomingRequestPaths`) |
-| **Swagger UI & JSON** | Ignored | Prefix `'/' + (process.env.SWAGGER_DOCS_PATH \|\| 'docs')` excludes `/docs`, `/docs/*`, and `/docs-*` |
+| Category               | Status   | Details                                                                                                         |
+| :--------------------- | :------- | :-------------------------------------------------------------------------------------------------------------- |
+| **HTTP & Routing**     | Enabled  | `@opentelemetry/instrumentation-http`, `express`, `router`, `nestjs-core`                                       |
+| **Database**           | Enabled  | `@opentelemetry/instrumentation-pg` (PostgreSQL queries & pool connections)                                     |
+| **Cache / Rate Limit** | Enabled  | `@opentelemetry/instrumentation-redis` / `ioredis`                                                              |
+| **Low-level Noise**    | Disabled | `@opentelemetry/instrumentation-fs`, `dns`, and `net` are disabled                                              |
+| **Healthchecks**       | Ignored  | Exact paths `['/', '/health', '/health/live', '/health/ready']` (configurable via `ignoreIncomingRequestPaths`) |
+| **Swagger UI & JSON**  | Ignored  | Prefix `'/' + (process.env.SWAGGER_DOCS_PATH \|\| 'docs')` excludes `/docs`, `/docs/*`, and `/docs-*`           |
 
 ---
 
@@ -36,22 +36,22 @@ This workspace provides a reusable OpenTelemetry tracing setup in `@jt-workspace
 
 ### Environment Variables
 
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `OTEL_ENABLED` | `true` (anything except `'false'`) | Set to `'false'` to skip `NodeSDK` startup (e.g. unit tests or offline dev) |
-| `OTEL_SERVICE_NAME` | `serviceName` argument (e.g. `ikagi-api`) | Service name displayed in Jaeger |
-| `OTEL_SERVICE_VERSION` | `1.0.0` | Resource `service.version` attribute |
-| `NODE_ENV` | `development` | Resource `deployment.environment` attribute |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | `http://localhost:4318/v1/traces` | OTLP/HTTP collector URL |
-| `SWAGGER_DOCS_PATH` | `docs` | Base Swagger path automatically excluded from HTTP tracing |
+| Variable                             | Default                                   | Description                                                                 |
+| :----------------------------------- | :---------------------------------------- | :-------------------------------------------------------------------------- |
+| `OTEL_ENABLED`                       | `true` (anything except `'false'`)        | Set to `'false'` to skip `NodeSDK` startup (e.g. unit tests or offline dev) |
+| `OTEL_SERVICE_NAME`                  | `serviceName` argument (e.g. `ikagi-api`) | Service name displayed in Jaeger                                            |
+| `OTEL_SERVICE_VERSION`               | `1.0.0`                                   | Resource `service.version` attribute                                        |
+| `NODE_ENV`                           | `development`                             | Resource `deployment.environment` attribute                                 |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | `http://localhost:4318/v1/traces`         | OTLP/HTTP collector URL                                                     |
+| `SWAGGER_DOCS_PATH`                  | `docs`                                    | Base Swagger path automatically excluded from HTTP tracing                  |
 
 ### Endpoint by Execution Mode
 
-| Execution Mode | `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Notes |
-| :--- | :--- | :--- |
-| **Host PC (`yarn nx serve @org/ikagi-api`)** | `http://localhost:4318/v1/traces` | Default in `apps/ikagi-api/.env` and `.env.dev` |
+| Execution Mode                                  | `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`         | Notes                                                                                            |
+| :---------------------------------------------- | :------------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| **Host PC (`yarn nx serve @org/ikagi-api`)**    | `http://localhost:4318/v1/traces`            | Default in `apps/ikagi-api/.env` and `.env.dev`                                                  |
 | **Docker Runner (`yarn docker:run ikagi-api`)** | `http://host.docker.internal:4318/v1/traces` | Injected automatically by [`tools/scripts/docker-runner.mjs`](./tools/scripts/docker-runner.mjs) |
-| **Shared Compose Network (`ikag-network`)** | `http://jaeger:4318/v1/traces` | Uses the `jaeger` Compose service name |
+| **Shared Compose Network (`ikag-network`)**     | `http://jaeger:4318/v1/traces`               | Uses the `jaeger` Compose service name                                                           |
 
 ### Jaeger Port Overrides (Root `.env`)
 
