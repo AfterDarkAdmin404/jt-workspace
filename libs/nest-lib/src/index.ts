@@ -53,4 +53,3 @@ export * from './health/health.module';
 export * from './health/health.controller';
 export * from './health/indicators/redis.health';
 export * from './health/interfaces/health-options.interface';
-

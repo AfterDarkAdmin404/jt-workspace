@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { IdempotencyModule } from '@nestjs/idempotency';
 import { User } from '../entities/user.entity';
 
-
 @Module({
   imports: [
     IdempotencyModule.forRoot({
@@ -14,4 +13,4 @@ import { User } from '../entities/user.entity';
   providers: [],
   exports: [],
 })
-export class OrgNestLibModule { }
+export class OrgNestLibModule {}

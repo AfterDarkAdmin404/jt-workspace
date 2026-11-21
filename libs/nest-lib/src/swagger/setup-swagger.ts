@@ -40,8 +40,7 @@ function getServiceRouteName(
   for (const wrapper of controllers) {
     if (!wrapper.metatype || typeof wrapper.metatype !== 'function') continue;
     const rawPath = Reflect.getMetadata(PATH_METADATA, wrapper.metatype) as
-      | string
-      | undefined;
+      string | undefined;
     if (!rawPath || rawPath === '/') continue;
 
     const firstSegment = rawPath.replace(/^\/+/, '').split('/')[0];

@@ -23,10 +23,10 @@ This workspace provides an extensible NestJS health check module in `@jt-workspa
 
 ## Endpoints
 
-| Probe | Routes | Checks Executed | Healthy / Failure Status |
-| :--- | :--- | :--- | :--- |
-| **Liveness** | `GET /`<br>`GET /health/live` | `memory_heap` (`MemoryHealthIndicator.checkHeap`) | `200 OK` (`status: "ok"`) / `503` if heap threshold exceeded or shutting down |
-| **Readiness** | `GET /health`<br>`GET /health/ready` | `database` (TypeORM), `redis` (`RedisHealthIndicator`), `externalEndpoints`, `customIndicators` | `200 OK` (`status: "ok"`) / `503 Service Unavailable` (`status: "error"`) |
+| Probe         | Routes                               | Checks Executed                                                                                 | Healthy / Failure Status                                                      |
+| :------------ | :----------------------------------- | :---------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------- |
+| **Liveness**  | `GET /`<br>`GET /health/live`        | `memory_heap` (`MemoryHealthIndicator.checkHeap`)                                               | `200 OK` (`status: "ok"`) / `503` if heap threshold exceeded or shutting down |
+| **Readiness** | `GET /health`<br>`GET /health/ready` | `database` (TypeORM), `redis` (`RedisHealthIndicator`), `externalEndpoints`, `customIndicators` | `200 OK` (`status: "ok"`) / `503 Service Unavailable` (`status: "error"`)     |
 
 > **Why separate liveness and readiness?** Transient PostgreSQL or Redis outages cause `/health` and `/health/ready` to return `503` (removing the instance from load-balancer rotation) while `/` and `/health/live` stay `200` to prevent container restart storms.
 
@@ -36,26 +36,26 @@ This workspace provides an extensible NestJS health check module in `@jt-workspa
 
 ### Environment Variables (`apps/ikagi-api`)
 
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `HEALTH_DB_TIMEOUT_MS` | `3000` | PostgreSQL `SELECT 1` ping timeout in milliseconds |
-| `HEALTH_MEMORY_HEAP_MB` | `300` | V8 heap threshold in megabytes for liveness checks |
-| `REDIS_ENABLED` | `true` | When `'false'`, Redis indicator reports `up` with `mode: "in-memory-fallback"` |
+| Variable                | Default | Description                                                                    |
+| :---------------------- | :------ | :----------------------------------------------------------------------------- |
+| `HEALTH_DB_TIMEOUT_MS`  | `3000`  | PostgreSQL `SELECT 1` ping timeout in milliseconds                             |
+| `HEALTH_MEMORY_HEAP_MB` | `300`   | V8 heap threshold in megabytes for liveness checks                             |
+| `REDIS_ENABLED`         | `true`  | When `'false'`, Redis indicator reports `up` with `mode: "in-memory-fallback"` |
 
 ### `HealthModuleOptions` ([`health-options.interface.ts`](libs/nest-lib/src/health/interfaces/health-options.interface.ts))
 
-| Option | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `serviceName` | `string` | _(required)_ | Logical service identifier |
-| `enableDatabaseCheck` | `boolean` | `true` | Enable TypeORM `pingCheck('database')` |
-| `databaseTimeoutMs` | `number` | `3000` | Timeout for database ping |
-| `enableRedisCheck` | `boolean` | `true` | Enable `RedisHealthIndicator` |
-| `redisTimeoutMs` | `number` | `2000` | Timeout for Redis `PING` |
-| `enableMemoryCheck` | `boolean` | `true` | Enable `MemoryHealthIndicator.checkHeap` on liveness probes |
-| `memoryHeapThresholdBytes` | `number` | `300 * 1024 * 1024` | Heap limit in bytes |
-| `gracefulShutdownTimeoutMs` | `number` | `0` | Delay in ms before server shutdown completes (when `app.enableShutdownHooks()` is enabled) |
-| `externalEndpoints` | `ExternalHealthEndpoint[]` | `[]` | Downstream HTTP services `{ key, url, timeoutMs? }` |
-| `customIndicators` | `HealthIndicatorFunction[]` | `[]` | Custom Terminus indicator callbacks |
+| Option                      | Type                        | Default             | Description                                                                                |
+| :-------------------------- | :-------------------------- | :------------------ | :----------------------------------------------------------------------------------------- |
+| `serviceName`               | `string`                    | _(required)_        | Logical service identifier                                                                 |
+| `enableDatabaseCheck`       | `boolean`                   | `true`              | Enable TypeORM `pingCheck('database')`                                                     |
+| `databaseTimeoutMs`         | `number`                    | `3000`              | Timeout for database ping                                                                  |
+| `enableRedisCheck`          | `boolean`                   | `true`              | Enable `RedisHealthIndicator`                                                              |
+| `redisTimeoutMs`            | `number`                    | `2000`              | Timeout for Redis `PING`                                                                   |
+| `enableMemoryCheck`         | `boolean`                   | `true`              | Enable `MemoryHealthIndicator.checkHeap` on liveness probes                                |
+| `memoryHeapThresholdBytes`  | `number`                    | `300 * 1024 * 1024` | Heap limit in bytes                                                                        |
+| `gracefulShutdownTimeoutMs` | `number`                    | `0`                 | Delay in ms before server shutdown completes (when `app.enableShutdownHooks()` is enabled) |
+| `externalEndpoints`         | `ExternalHealthEndpoint[]`  | `[]`                | Downstream HTTP services `{ key, url, timeoutMs? }`                                        |
+| `customIndicators`          | `HealthIndicatorFunction[]` | `[]`                | Custom Terminus indicator callbacks                                                        |
 
 ---
 
@@ -96,11 +96,13 @@ HealthModule.forRootAsync({
   ) => ({
     serviceName: 'ikagi-api',
     externalEndpoints: [
-      { key: 'billing_api', url: 'http://billing:3002/health', timeoutMs: 2000 },
+      {
+        key: 'billing_api',
+        url: 'http://billing:3002/health',
+        timeoutMs: 2000,
+      },
     ],
-    customIndicators: [
-      async () => indicatorService.check('worker_queue').up(),
-    ],
+    customIndicators: [async () => indicatorService.check('worker_queue').up()],
   }),
 });
 ```

@@ -89,8 +89,7 @@ export const authService = {
         throwOnError: true,
       });
       const data = response.data as
-        | (AuthTokenResponseDto & { access_token?: string })
-        | undefined;
+        (AuthTokenResponseDto & { access_token?: string }) | undefined;
 
       if (data && (data.accessToken || data.access_token)) {
         const accessToken = extractAccessToken(data);

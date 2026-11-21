@@ -8,11 +8,11 @@ Per-app caller workflows (starting with [`.github/workflows/ikagi-api-deploy.yml
 
 ## Trigger & Branch Behavior (`ikagi-api-deploy`)
 
-| Event | Outcome |
-| :--- | :--- |
+| Event                                                                                                                              | Outcome                                                                                  |
+| :--------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------- |
 | Push / merged PR to `staging` or `production` touching `apps/ikagi-api/**`, `libs/nest-lib/**`, or root workspace/workflow configs | Runs `build-and-verify` and `deploy-gcp` (targeted at `staging-gcp` or `production-gcp`) |
-| Push / merged PR to `staging` or `production` touching only unrelated apps (e.g., `apps/ikagi-web/**`) | **Skipped** (path filter does not match) |
-| Closed PR that was **not** merged | **Ignored** (`on: push` only fires on commits actually merged to the target branch) |
+| Push / merged PR to `staging` or `production` touching only unrelated apps (e.g., `apps/ikagi-web/**`)                             | **Skipped** (path filter does not match)                                                 |
+| Closed PR that was **not** merged                                                                                                  | **Ignored** (`on: push` only fires on commits actually merged to the target branch)      |
 
 > **Important (Branch Protection):** Do **not** add `ikagi-api-deploy` (or any `<name>-api-deploy` workflow) as a Required Status Check in GitHub branch protection rules, because path-filtered workflows are intentionally skipped when unrelated apps change.
 
@@ -35,33 +35,33 @@ Configure these under **Settings → Environments → `<env>`** (or at the repos
 
 ### Variables
 
-| Name | Default / Fallback | Description |
-| :--- | :--- | :--- |
-| `GCP_DEPLOY_ENABLED` | _(unset / `'false'`)_ | Set to `'true'` to switch `deploy-gcp` from dry-run notice mode to live GCP authentication, Artifact Registry push, and Cloud Run deploy |
-| `GCP_PROJECT_ID` | `placeholder-gcp-project` | Target GCP project ID |
-| `GCP_REGION` | `asia-southeast1` | Artifact Registry and Cloud Run region |
-| `GCP_AR_REPO` | `api-docker-repo` | Artifact Registry Docker repository name |
-| `GCP_CLOUD_RUN_SERVICE` | `<app_name>-<branch>` | Optional override for the Cloud Run service name (defaults to `ikagi-api-staging` or `ikagi-api-production`) |
+| Name                    | Default / Fallback        | Description                                                                                                                              |
+| :---------------------- | :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `GCP_DEPLOY_ENABLED`    | _(unset / `'false'`)_     | Set to `'true'` to switch `deploy-gcp` from dry-run notice mode to live GCP authentication, Artifact Registry push, and Cloud Run deploy |
+| `GCP_PROJECT_ID`        | `placeholder-gcp-project` | Target GCP project ID                                                                                                                    |
+| `GCP_REGION`            | `asia-southeast1`         | Artifact Registry and Cloud Run region                                                                                                   |
+| `GCP_AR_REPO`           | `api-docker-repo`         | Artifact Registry Docker repository name                                                                                                 |
+| `GCP_CLOUD_RUN_SERVICE` | `<app_name>-<branch>`     | Optional override for the Cloud Run service name (defaults to `ikagi-api-staging` or `ikagi-api-production`)                             |
 
 ### Secrets (Required for Live Mode)
 
-| Name | Description |
-| :--- | :--- |
+| Name                             | Description                                                                                                                                               |
+| :------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Full Workload Identity Federation provider resource name (`projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/<POOL>/providers/<PROVIDER>`) |
-| `GCP_SERVICE_ACCOUNT` | Service account email with `roles/artifactregistry.writer`, `roles/run.admin`, and `roles/iam.serviceAccountUser` |
+| `GCP_SERVICE_ACCOUNT`            | Service account email with `roles/artifactregistry.writer`, `roles/run.admin`, and `roles/iam.serviceAccountUser`                                         |
 
 ---
 
 ## Reusable Workflow Inputs (`_reusable-api-gcp-deploy.yml`)
 
-| Input | Type | Required | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `app_name` | `string` | Yes | — | App folder name under `apps/` (e.g., `ikagi-api`) and Artifact Registry image name |
-| `dockerfile_path` | `string` | Yes | — | Path to the dedicated Dockerfile relative to workspace root |
-| `nx_project` | `string` | No | `@org/<app_name>` | Nx project name passed to `yarn nx build` |
-| `node_version` | `string` | No | `'24'` | Node.js version configured by `actions/setup-node@v4` |
-| `container_port` | `number` | No | `3000` | Port passed to `gcloud run deploy --port` |
-| `allow_unauthenticated` | `boolean` | No | `true` | Passes `--allow-unauthenticated` when `true`, or `--no-allow-unauthenticated` when `false` |
+| Input                   | Type      | Required | Default           | Description                                                                                |
+| :---------------------- | :-------- | :------- | :---------------- | :----------------------------------------------------------------------------------------- |
+| `app_name`              | `string`  | Yes      | —                 | App folder name under `apps/` (e.g., `ikagi-api`) and Artifact Registry image name         |
+| `dockerfile_path`       | `string`  | Yes      | —                 | Path to the dedicated Dockerfile relative to workspace root                                |
+| `nx_project`            | `string`  | No       | `@org/<app_name>` | Nx project name passed to `yarn nx build`                                                  |
+| `node_version`          | `string`  | No       | `'24'`            | Node.js version configured by `actions/setup-node@v4`                                      |
+| `container_port`        | `number`  | No       | `3000`            | Port passed to `gcloud run deploy --port`                                                  |
+| `allow_unauthenticated` | `boolean` | No       | `true`            | Passes `--allow-unauthenticated` when `true`, or `--no-allow-unauthenticated` when `false` |
 
 ---
 

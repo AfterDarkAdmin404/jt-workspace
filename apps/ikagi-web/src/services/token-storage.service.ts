@@ -1,7 +1,9 @@
 const ACCESS_TOKEN_KEY = 'ikagi_access_token';
 
 function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+  return (
+    typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+  );
 }
 
 export const tokenStorage = {
@@ -20,7 +22,9 @@ export const tokenStorage = {
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
   },
 
-  subscribeToTokenChanges(callback: (token: string | null) => void): () => void {
+  subscribeToTokenChanges(
+    callback: (token: string | null) => void,
+  ): () => void {
     if (!isBrowser()) return () => {};
     const handleStorage = (event: StorageEvent) => {
       if (event.key === ACCESS_TOKEN_KEY || event.key === null) {
