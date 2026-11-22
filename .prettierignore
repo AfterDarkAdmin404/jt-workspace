@@ -7,3 +7,6 @@
 apps/ikagi-web/next-env.d.ts
 apps/ikagi-web/src/api/generated/
 apps/ikagi-web/src/api/swagger/
+apps/adsociety-partner-web/next-env.d.ts
+apps/adsociety-partner-web/src/api/generated/
+apps/adsociety-partner-web/src/api/swagger/
