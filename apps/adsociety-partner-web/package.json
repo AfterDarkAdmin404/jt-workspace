@@ -1,0 +1,17 @@
+{
+  "name": "@org/adsociety-partner-web",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "sourceRoot": "apps/adsociety-partner-web/src"
+  },
+  "scripts": {
+    "generate:api": "node scripts/generate-api.mjs",
+    "generate:api:fetch": "node scripts/generate-api.mjs --fetch"
+  },
+  "dependencies": {
+    "next": "~16.4.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

@@ -14,6 +14,9 @@
     },
     {
       "path": "./libs/next-lib"
+    },
+    {
+      "path": "./apps/adsociety-partner-web"
     }
   ],
   "compilerOptions": {}

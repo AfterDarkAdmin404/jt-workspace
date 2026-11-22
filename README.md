@@ -89,6 +89,14 @@ Once running on `http://localhost:3000`:
 yarn nx run-many -t build typecheck
 ```
 
+### Nx Scripts & Workspace Generators
+
+For creating new apps/libraries (`yarn nx g ...`), running project/affected tasks, inspecting the dependency graph, formatting, and cache management, see **[nx-scripts.md](./nx-scripts.md)**.
+
+### Frontend API Client Generation (`ikagi-web`)
+
+To regenerate typed Axios/TypeScript API clients from local Swagger specs (`generate:api`) or fetch updated OpenAPI specs from a running `@org/ikagi-api` instance (`generate:api:fetch`), see **[api-client-generation.md](./api-client-generation.md)**.
+
 ### Docker (`ikagi-api`)
 
 `apps/ikagi-api/Dockerfile` builds `@jt-workspace/nest-lib` and `@org/ikagi-api`:
